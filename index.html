@@ -224,6 +224,31 @@
             border: 1px solid rgba(255,255,255,0.35);
         }
         .modal-actions .cancel-btn:hover { box-shadow: 0 0 15px rgba(255,255,255,0.4); }
+        .emoji-heart, .emoji-star {
+            display: inline-block;
+            margin-left: 0.2em;
+        }
+        .emoji-heart {
+            animation: heartbeat 1.6s ease-in-out infinite;
+            transform-origin: center;
+            filter: drop-shadow(0 0 6px rgba(255, 64, 129, 0.45));
+        }
+        .emoji-star {
+            animation: shimmer 2.4s ease-in-out infinite;
+            filter: drop-shadow(0 0 6px rgba(255, 255, 150, 0.55));
+        }
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.18); }
+            40% { transform: scale(0.94); }
+            60% { transform: scale(1.12); }
+            80% { transform: scale(1.02); }
+        }
+        @keyframes shimmer {
+            0%, 100% { transform: rotate(0deg) scale(1); opacity: 0.85; }
+            30% { transform: rotate(6deg) scale(1.12); opacity: 1; }
+            60% { transform: rotate(-6deg) scale(0.97); opacity: 0.92; }
+        }
         #response { margin-top: 20px; font-style: italic; opacity: 0; transition: opacity 0.6s ease-in-out; text-shadow: 0 0 5px rgba(0,0,0,0.7); }
         #response.visible { opacity: 1; }
         #response.with-delay { opacity: 0; }
@@ -297,7 +322,7 @@
 </head>
 <body class="intro-active">
     <div id="intro">
-        <h1>Happy Birthday, Diana&#10084;&#65039;</h1>
+        <h1>Happy Birthday, Diana<span class="emoji-heart" role="img" aria-label="love">❤️</span></h1>
         <p>"It all began with a simple message under the glow of the northern lights: 'I know we don't know each other, but you're living my dream...' From that unexpected spark, it blossomed into discovering a truly wonderful soul—one I care for deeply, respect immensely, and always strive to stand by, no matter where life takes us. Birthdays aren't just for you; they're a beautiful reminder for those who cherish you, celebrating the joy of being woven into your incredible story."</p>
         <div id="skip-text" onclick="skipIntro()">Tap to skip</div>
     </div>
@@ -342,7 +367,7 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
         <div class="constellation"></div>
     </div>
     <div id="content">
-        <h1>Make a wish&#11088;</h1>
+        <h1>Make a wish<span class="emoji-star" role="img" aria-label="star">⭐</span></h1>
         <p>Under this magical sky, make a wish and receive a reflective insight.</p>
         <input type="text" id="wish-input" placeholder="Type your wish here...">
         <button onclick="processWish()">Submit Wish</button>
@@ -572,6 +597,7 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
     </script>
 </body>
 </html>
+
 
 
 
