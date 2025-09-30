@@ -254,9 +254,12 @@
         #response.with-delay { opacity: 0; }
         #response.with-delay.show { opacity: 1; transition: opacity 0.8s ease-in-out; }
         #response.reflecting { animation: pulse 1.5s infinite; }
+        #response p { margin: 0 0 1em; }
+        #response p:last-child { margin-bottom: 0; }
         #stored-list { margin-top: 20px; display: none; width: 100%; background: rgba(0,0,0,0.5); /* Darker tint for readability */ padding: 15px; border-radius: 10px; }
         #stored-list ul { list-style: none; padding: 0; }
         #stored-list li { margin: 15px 0; background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,255,200,0.1); }
+        .row-actions { margin-top: 12px; display: flex; justify-content: flex-end; }
         /* Responsive */
         @media (max-width: 768px) { h1 { font-size: 2em; } #content { padding: 20px; } }
         #intro {
@@ -318,6 +321,260 @@
         #stored-message.visible {
             opacity: 1;
         }
+
+        .input-section {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            margin-bottom: 20px;
+        }
+        .wish-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+        }
+        .wish-field input {
+            width: 100%;
+        }
+        .primary-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        #followup-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            text-align: left;
+        }
+        #followup-wrapper label {
+            font-size: 0.9em;
+            letter-spacing: 0.5px;
+            color: rgba(255,255,255,0.85);
+        }
+        #followup-input {
+            width: 100%;
+            min-height: 80px;
+            resize: vertical;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(0,255,200,0.2);
+            background: rgba(0,0,0,0.35);
+            color: #fff;
+            font-family: 'Georgia', serif;
+            box-shadow: inset 0 0 12px rgba(0,255,200,0.08);
+            transition: border 0.3s ease, box-shadow 0.3s ease;
+        }
+        #followup-input:focus {
+            border-color: rgba(0,255,200,0.6);
+            box-shadow: inset 0 0 18px rgba(0,255,200,0.18);
+            outline: none;
+        }
+        #response {
+            width: 100%;
+            margin-top: 10px;
+            background: rgba(0,0,0,0.35);
+            border: 1px solid rgba(0,255,200,0.25);
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 0 24px rgba(0,255,200,0.15);
+            display: none;
+        }
+        #conversation-track {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+        .crumb {
+            position: relative;
+            padding: 8px 14px;
+            border-radius: 999px;
+            font-size: 0.82em;
+            letter-spacing: 0.4px;
+            background: rgba(0,255,200,0.15);
+            border: 1px solid rgba(0,255,200,0.35);
+            color: #b3ffe5;
+            backdrop-filter: blur(6px);
+            box-shadow: 0 0 12px rgba(0,255,200,0.12);
+        }
+        .crumb.wish { background: rgba(255,215,0,0.15); border-color: rgba(255,215,0,0.45); color: #ffe9a6; }
+        .crumb.note { background: rgba(255,140,0,0.12); border-color: rgba(255,140,0,0.4); color: #ffd4a1; }
+        .crumb.reflection { background: rgba(135,206,250,0.12); border-color: rgba(135,206,250,0.4); color: #d1f1ff; }
+        #conversation-body {
+            max-height: 260px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding-right: 6px;
+        }
+        .conversation::-webkit-scrollbar { width: 6px; }
+        .conversation::-webkit-scrollbar-thumb { background: rgba(0,255,200,0.4); border-radius: 6px; }
+        .bubble {
+            padding: 16px;
+            border-radius: 14px;
+            text-align: left;
+            line-height: 1.5;
+            animation: fadeSlide 0.6s ease;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.18);
+        }
+        .bubble p { margin: 0 0 10px; }
+        .bubble p:last-child { margin-bottom: 0; }
+        .bubble.wish { background: linear-gradient(135deg, rgba(255,215,0,0.25), rgba(0,0,0,0.4)); border-color: rgba(255,215,0,0.45); }
+        .bubble.note { background: linear-gradient(135deg, rgba(255,140,0,0.25), rgba(0,0,0,0.35)); border-color: rgba(255,140,0,0.35); }
+        .bubble.reflection { background: linear-gradient(135deg, rgba(0,255,200,0.2), rgba(0,0,0,0.45)); border-color: rgba(0,255,200,0.35); }
+        .bubble.thinking { font-style: italic; opacity: 0.8; text-align: center; }
+        .action-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            align-items: center;
+            margin-top: 18px;
+        }
+        button.primary {
+            background: linear-gradient(135deg, rgba(0,255,200,0.65), rgba(0,180,255,0.65));
+            color: #021618;
+            font-weight: 600;
+        }
+        button.primary:disabled { opacity: 0.6; cursor: not-allowed; }
+        button.secondary {
+            background: rgba(255,255,255,0.12);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.25);
+        }
+        button.secondary:hover { box-shadow: 0 0 15px rgba(255,255,255,0.3); }
+        button.ghost {
+            background: rgba(0,0,0,0.35);
+            color: #ffe679;
+            border: 1px solid rgba(255,215,0,0.4);
+        }
+        button.ghost:hover { box-shadow: 0 0 18px rgba(255,215,0,0.4); }
+        button.icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1em;
+            background: rgba(0,0,0,0.35);
+            border: 1px solid rgba(0,255,200,0.45);
+            color: #b8fff0;
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            box-shadow: 0 0 18px rgba(0,255,200,0.25);
+            z-index: 12;
+        }
+        button.icon:hover { transform: translateY(-2px); }
+        button.icon.close {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(0,0,0,0.35);
+            color: #fff;
+            border-color: rgba(255,255,255,0.3);
+            width: 32px;
+            height: 32px;
+        }
+        .info-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.75);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+        }
+        .info-overlay.show { display: flex; }
+        .info-card {
+            position: relative;
+            width: min(90%, 420px);
+            background: rgba(5, 25, 35, 0.92);
+            border: 1px solid rgba(0,255,200,0.35);
+            border-radius: 18px;
+            padding: 28px;
+            text-align: left;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.45);
+            animation: floatUp 0.5s ease;
+        }
+        .info-card h2 {
+            margin-top: 0;
+            margin-bottom: 12px;
+            text-align: center;
+            letter-spacing: 0.8px;
+        }
+        .info-card ol {
+            padding-left: 18px;
+            margin: 0 0 12px;
+        }
+        .info-card li { margin-bottom: 8px; }
+        .info-card .footnote { font-size: 0.85em; color: rgba(255,255,255,0.75); text-align: center; }
+        .timeline .crumb { animation: glowPulse 3.5s ease-in-out infinite; }
+        @keyframes glowPulse {
+            0%, 100% { box-shadow: 0 0 10px rgba(0,255,200,0.35); }
+            50% { box-shadow: 0 0 18px rgba(0,255,200,0.65); }
+        }
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes floatUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @media (max-width: 540px) {
+            .primary-actions { flex-direction: column; }
+            button.icon { top: -10px; right: -10px; }
+            #response { padding: 16px; }
+            .action-bar { flex-direction: column; }
+            .info-card { width: 92%; padding: 24px; }
+        }
+
+        .conversation-preview {
+            margin-top: 8px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(0,255,200,0.2);
+            border-radius: 12px;
+            padding: 14px;
+        }
+        .stored-event {
+            padding: 10px 0;
+            border-bottom: 1px dashed rgba(255,255,255,0.15);
+        }
+        .stored-event:last-child { border-bottom: none; }
+        .stored-event strong {
+            display: block;
+            margin-bottom: 4px;
+            color: rgba(0,255,200,0.75);
+            letter-spacing: 0.4px;
+        }
+        .stored-event.wish strong { color: rgba(255,215,0,0.75); }
+        .stored-event.note strong { color: rgba(255,140,0,0.75); }
+        .stored-event.reflection strong { color: rgba(135,206,250,0.85); }
+        .stored-event p {
+            margin: 0;
+            font-style: italic;
+            color: rgba(255,255,255,0.82);
+        }
+        .action-bar button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 170px;
+        }
     </style>
 </head>
 <body class="intro-active">
@@ -369,12 +626,33 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
     <div id="content">
         <h1>Make a wish<span class="emoji-star" role="img" aria-label="star">⭐</span></h1>
         <p>Under this magical sky, make a wish and receive a reflective insight.</p>
-        <input type="text" id="wish-input" placeholder="Type your wish here...">
-        <button onclick="processWish()">Submit Wish</button>
-        <div id="response"></div>
-        <button id="store-btn" style="display:none;" onclick="storeReflection()">Store This Reflection</button>
-        <span id="stored-message">Wish stored!</span>
-        <button onclick="viewStored()">View Stored Reflections</button>
+        <button id="guide-button" class="icon" aria-label="How this works" onclick="openGuide()">?</button>
+        <div class="input-section">
+            <div class="wish-controls">
+                <div class="wish-field">
+                    <input type="text" id="wish-input" placeholder="Type your wish here..." autocomplete="off">
+                </div>
+                <div class="primary-actions">
+                    <button id="submit-btn" class="primary" onclick="processWish()">Submit Wish</button>
+                    <button id="new-wish-btn" class="ghost" style="display:none;" onclick="startNewWish()">Make a New Wish</button>
+                </div>
+            </div>
+            <div id="followup-wrapper" style="display:none;">
+                <label for="followup-input">Share the next thought or question guiding you forward:</label>
+                <textarea id="followup-input" placeholder="Add a note before we continue..."></textarea>
+            </div>
+        </div>
+        <div id="response">
+            <div id="conversation-track" class="timeline"></div>
+            <div id="conversation-body" class="conversation"></div>
+        </div>
+        <div class="action-bar">
+            <button id="continue-btn" class="primary" style="display:none;" onclick="continueReflection()">Continue Reflection</button>
+            <button id="store-btn" class="primary" style="display:none;" onclick="storeReflection()">Store This Reflection</button>
+            <button id="export-btn" class="primary" style="display:none;" onclick="exportConversation()">Download Conversation</button>
+            <span id="stored-message">Wish stored!</span>
+            <button class="secondary" onclick="viewStored()">View Stored Reflections</button>
+        </div>
         <div id="stored-list"></div>
     </div>
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
@@ -387,14 +665,26 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
             </div>
         </div>
     </div>
+    <div id="guide-overlay" class="info-overlay" aria-hidden="true">
+        <div class="info-card" role="dialog" aria-modal="true" aria-labelledby="guide-title">
+            <button id="guide-close" class="icon close" aria-label="Close guide">&times;</button>
+            <h2 id="guide-title">How this space works</h2>
+            <ol>
+                <li><strong>Make a wish:</strong> share what is on your heart or mind and press <em>Submit Wish</em>.</li>
+                <li><strong>Receive a reflection:</strong> read the response, then jot a follow-up thought to continue the dialogue.</li>
+                <li><strong>Keep exploring:</strong> add new notes, store meaningful insights, or download the conversation as a keepsake.</li>
+                <li><strong>Return anytime:</strong> stored reflections live here so you can revisit or release them whenever you like.</li>
+            </ol>
+            <p class="footnote">Tip: you can always start a fresh wish with the button beside <em>Submit Wish</em>.</p>
+        </div>
+    </div>
     <div id="overlay">
         <div id="error-message">
             <p>Oops, the stars aren't aligning right now. Please try again when your connection is stronger-your birthday magic awaits!</p>
             <button onclick="hideError()">Close</button>
         </div>
     </div>
-    <script>
-        // Error handling
+            <script>
         function showError() { document.getElementById('overlay').style.display = 'flex'; }
         function hideError() { document.getElementById('overlay').style.display = 'none'; }
 
@@ -413,7 +703,7 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
             void toast.offsetWidth;
             toast.classList.add('show');
             if (duration !== Infinity) {
-                toastTimeout = setTimeout(() => hideToast(), duration);
+                toastTimeout = setTimeout(hideToast, duration);
             }
         }
 
@@ -454,20 +744,139 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
             if (confirmed && typeof action === 'function') action();
         }
 
-        if (confirmYes) confirmYes.addEventListener('click', () => resolveConfirm(true));
-        if (confirmNo) confirmNo.addEventListener('click', () => resolveConfirm(false));
-        if (confirmOverlay) confirmOverlay.addEventListener('click', (event) => {
+        if (confirmYes) confirmYes.addEventListener('click', function () { resolveConfirm(true); });
+        if (confirmNo) confirmNo.addEventListener('click', function () { resolveConfirm(false); });
+        if (confirmOverlay) confirmOverlay.addEventListener('click', function (event) {
             if (event.target === confirmOverlay) resolveConfirm(false);
         });
-        window.addEventListener('keydown', (event) => {
+        window.addEventListener('keydown', function (event) {
             if (event.key === 'Escape' && confirmOverlay && confirmOverlay.classList.contains('show')) {
                 resolveConfirm(false);
             }
         });
 
-        // Process wish via proxy
+        let currentWish = null;
+
+        function safeForPrompt(value) {
+            return String(value || '').replace(/`/g, "'").replace(/\s+/g, ' ').trim();
+        }
+
+        function ensureResponseStructure() {
+            const responseDiv = document.getElementById('response');
+            const track = document.getElementById('conversation-track');
+            const body = document.getElementById('conversation-body');
+            return { responseDiv, track, body };
+        }
+
+        function renderReflections(triggerAnimation = true) {
+            const refs = ensureResponseStructure();
+            const responseDiv = refs.responseDiv;
+            const track = refs.track;
+            const body = refs.body;
+            if (!responseDiv || !track || !body) return;
+
+            track.innerHTML = '';
+            body.innerHTML = '';
+
+            if (!currentWish || !currentWish.timeline || !currentWish.timeline.length) {
+                if (currentWish && currentWish.waiting) {
+                    responseDiv.style.display = 'block';
+                    const thinking = document.createElement('div');
+                    thinking.className = 'bubble thinking';
+                    thinking.textContent = 'Reflecting on your wish...';
+                    body.appendChild(thinking);
+                } else {
+                    responseDiv.style.display = 'none';
+                }
+                updateActionVisibility();
+                return;
+            }
+
+            currentWish.timeline.forEach(function (entry) {
+                const crumb = document.createElement('div');
+                crumb.className = 'crumb ' + entry.type;
+                crumb.textContent = entry.label;
+                track.appendChild(crumb);
+
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble ' + entry.type;
+                entry.text.split(/\n+/).forEach(function (paragraph) {
+                    const p = document.createElement('p');
+                    p.textContent = paragraph.trim();
+                    bubble.appendChild(p);
+                });
+                body.appendChild(bubble);
+            });
+
+            if (currentWish.waiting) {
+                const thinking = document.createElement('div');
+                thinking.className = 'bubble thinking';
+                thinking.textContent = 'Reflecting on your words...';
+                body.appendChild(thinking);
+            }
+
+            responseDiv.style.display = 'block';
+            if (triggerAnimation) {
+                responseDiv.classList.remove('with-delay', 'show', 'visible');
+                responseDiv.classList.add('with-delay');
+                void responseDiv.offsetWidth;
+                responseDiv.classList.add('show');
+            } else {
+                responseDiv.classList.remove('with-delay', 'show');
+                responseDiv.classList.add('visible');
+            }
+
+            setTimeout(function () {
+                body.scrollTop = body.scrollHeight;
+            }, 60);
+
+            updateActionVisibility();
+        }
+
+        const baseGuidance = 'You are Diana\'s steady inner voice. Respond with sincerity, curiosity, and gentle daring. Keep every reply under 90 words in a single paragraph and end with an original line that feels like a keepsake.';
+
+        function buildInitialPrompt(wish) {
+            const cleanWish = safeForPrompt(wish);
+            return baseGuidance + ' Evaluate the wish in quotes: "' + cleanWish + '". If it lacks meaningful content, kindly request more detail in a short paragraph. Otherwise, craft one unique paragraph that mirrors her emotion or ambition, introduces one unexpected lens or question that sharpens her direction, balances realism with hope, and ends with a memorable closing line inviting thoughtful action.';
+        }
+
+        function buildFollowupPrompt(wish, history, note) {
+            history = history || [];
+            const cleanWish = safeForPrompt(wish);
+            const cleanHistory = history.map(function (entry) { return safeForPrompt(entry); });
+            const lastReflection = cleanHistory.length ? cleanHistory[cleanHistory.length - 1] : '';
+            const earlierReflections = cleanHistory.slice(0, -1).slice(-2);
+            let earlierSummary = '';
+            if (earlierReflections.length) {
+                const parts = earlierReflections.map(function (text) {
+                    return '"' + text + '"';
+                });
+                earlierSummary = ' Earlier reflections you offered before this note: ' + parts.join(' | ') + '.';
+            }
+            const cleanNote = safeForPrompt(note);
+            return baseGuidance + ' Original wish: "' + cleanWish + '". Your latest reflection was: "' + lastReflection + '".' + earlierSummary + ' She now adds: "' + cleanNote + '". Continue the dialogue with another paragraph under 90 words that acknowledges where the last reflection leaves her, offers a fresh angle or probing question, and finishes with a distinct memorable line. If the wish still feels unclear, focus on guiding her to clarify it.';
+        }
+
+        async function callReflectionAPI(prompt) {
+            const res = await fetch('/openai-proxy', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt: prompt })
+            });
+            if (!res.ok) throw new Error('API error');
+            const data = await res.json();
+            if (data && data.error) {
+                throw new Error(data.error.message || 'Proxy error');
+            }
+            const message = data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+            return (message || '').trim();
+        }
+
         async function processWish() {
-            const wish = document.getElementById('wish-input').value.trim();
+            const wishInput = document.getElementById('wish-input');
+            const submitBtn = document.getElementById('submit-btn');
+            const followupInput = document.getElementById('followup-input');
+            const wish = wishInput ? wishInput.value.trim() : '';
             if (!wish) {
                 showToast('Share a wish before sending it to the stars.', 'warn');
                 return;
@@ -477,126 +886,296 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
                 showToast('Give a little more detail so the reflection can truly help.', 'warn');
                 return;
             }
-            const responseDiv = document.getElementById('response');
-            const storeBtn = document.getElementById('store-btn');
-            const submitBtn = document.querySelector('button[onclick="processWish()"]');
 
-            responseDiv.style.display = 'block';
-            responseDiv.classList.remove('with-delay', 'show');
-            responseDiv.textContent = 'Reflecting on your wish...';
-            responseDiv.classList.add('visible', 'reflecting');
-            if (storeBtn) storeBtn.style.display = 'none';
+            if (followupInput) followupInput.value = '';
             if (submitBtn) submitBtn.disabled = true;
 
-            const systemPrompt = `Context: You are guiding Diana through heartfelt self-reflection. First assess the wish enclosed in quotes: "${wish}". If it lacks real content, feels random, or offers no direction, respond with a gentle request for a fuller wish while staying within one short paragraph. Otherwise, craft a single original paragraph under 90 words that acknowledges the wish, offers realistic yet inspiring guidance, and ends with a memorable phrase or quote inviting thoughtful action. Keep the tone sincere, curious, and grounded.`;
+            currentWish = {
+                wish: wish,
+                history: [],
+                timeline: [
+                    { type: 'wish', label: 'Wish', text: wish }
+                ],
+                waiting: true
+            };
+            renderReflections(false);
 
             try {
-                const res = await fetch('/openai-proxy', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ prompt: systemPrompt })
-                });
-                if (!res.ok) throw new Error('API error');
-                const data = await res.json();
-                const choice = data && data.choices && data.choices[0];
-                const message = choice && choice.message && choice.message.content;
-                const reflection = (message || '').replace(/\s+/g, ' ').trim();
+                const prompt = buildInitialPrompt(wish);
+                const reflection = await callReflectionAPI(prompt);
                 if (!reflection) throw new Error('Empty reflection');
-                responseDiv.classList.remove('reflecting', 'visible');
-                responseDiv.classList.remove('with-delay', 'show');
-                responseDiv.textContent = reflection;
-                responseDiv.classList.add('with-delay');
-                void responseDiv.offsetWidth;
-                responseDiv.classList.add('show');
-                currentWish = { wish, reflection };
-                if (storeBtn) storeBtn.style.display = 'inline';
+                currentWish.history.push(reflection);
+                currentWish.timeline.push({ type: 'reflection', label: 'Reflection 1', text: reflection });
+                currentWish.waiting = false;
+                renderReflections(true);
             } catch (error) {
                 console.error(error);
-                responseDiv.classList.remove('reflecting');
-                responseDiv.textContent = '';
+                currentWish = null;
+                renderReflections(false);
                 showError();
             } finally {
                 if (submitBtn) submitBtn.disabled = false;
+                updateActionVisibility();
             }
         }
 
-        let currentWish = null;
+        async function continueReflection() {
+            if (!currentWish || !currentWish.history || !currentWish.history.length) {
+                showToast('Make a wish first, then we can go deeper.', 'warn');
+                return;
+            }
+            const followupInput = document.getElementById('followup-input');
+            const continueBtn = document.getElementById('continue-btn');
+            const storeBtn = document.getElementById('store-btn');
+            if (!followupInput) return;
+            const note = followupInput.value.trim();
+            if (note.replace(/[^a-zA-Z0-9]/g, '').length < 3) {
+                showToast('Share a little more so we can continue meaningfully.', 'warn');
+                return;
+            }
 
-        // Storage
+            if (continueBtn) continueBtn.disabled = true;
+            if (storeBtn) storeBtn.style.display = 'none';
+
+            const existingNotes = currentWish.timeline.filter(function (entry) { return entry.type === 'note'; }).length;
+            const noteEntry = { type: 'note', label: 'Note ' + (existingNotes + 1), text: note };
+            currentWish.timeline.push(noteEntry);
+            currentWish.waiting = true;
+            renderReflections(false);
+
+            try {
+                const prompt = buildFollowupPrompt(currentWish.wish, currentWish.history, note);
+                const reflection = await callReflectionAPI(prompt);
+                if (!reflection) throw new Error('Empty reflection');
+                currentWish.history.push(reflection);
+                const reflectionLabel = 'Reflection ' + currentWish.history.length;
+                currentWish.timeline.push({ type: 'reflection', label: reflectionLabel, text: reflection });
+                currentWish.waiting = false;
+                if (followupInput) followupInput.value = '';
+                renderReflections(true);
+            } catch (error) {
+                console.error(error);
+                currentWish.timeline.pop(); // remove note entry
+                currentWish.waiting = false;
+                renderReflections(false);
+                showError();
+            } finally {
+                if (continueBtn) continueBtn.disabled = false;
+                updateActionVisibility();
+            }
+        }
+
         function storeReflection() {
-            if (!currentWish) return;
-            let stored = JSON.parse(localStorage.getItem('reflections') || '[]');
-            stored.push(currentWish);
-            localStorage.setItem('reflections', JSON.stringify(stored));
+            if (!currentWish || !currentWish.history || !currentWish.history.length) return;
+            const snapshotTimeline = currentWish.timeline ? currentWish.timeline.map(function (entry) {
+                return { type: entry.type, label: entry.label, text: entry.text };
+            }) : null;
+            const entry = {
+                wish: currentWish.wish,
+                history: currentWish.history.slice(),
+                reflection: currentWish.timeline.filter(function (item) { return item.type === 'reflection'; }).map(function (item) { return item.text; }).join('\n\n'),
+                timeline: snapshotTimeline
+            };
+            const existing = JSON.parse(localStorage.getItem('reflections') || '[]');
+            existing.push(entry);
+            localStorage.setItem('reflections', JSON.stringify(existing));
             const storedMessage = document.getElementById('stored-message');
-            storedMessage.classList.add('visible');
-            setTimeout(() => storedMessage.classList.remove('visible'), 2000); // Hide after 2s
+            if (storedMessage) {
+                storedMessage.classList.add('visible');
+                setTimeout(function () { storedMessage.classList.remove('visible'); }, 2000);
+            }
+        }
+
+        function exportConversation() {
+            if (!currentWish || !currentWish.timeline || !currentWish.timeline.length) {
+                showToast('There is no conversation to export yet.', 'warn');
+                return;
+            }
+            const popup = window.open('', '_blank');
+            if (!popup) {
+                showToast('Enable pop-ups to download the conversation.', 'error', 3500);
+                return;
+            }
+            const title = 'Wish Reflection';
+            const items = currentWish.timeline.map(function (entry) {
+                const label = escapeHtml(entry.label || '');
+                const text = escapeHtml(entry.text || '').replace(/\n/g, '<br/>');
+                return '<section class="export-entry ' + entry.type + '"><h3>' + label + '</h3><p>' + text + '</p></section>';
+            }).join('');
+            popup.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>' + title + '</title><style>body{font-family:Georgia,serif;padding:40px;background:#0b1c2a;color:#effff7;}h1{text-align:center;margin-bottom:30px;}section.export-entry{margin-bottom:24px;padding:18px;border-radius:12px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);}section.export-entry.wish{background:rgba(255,215,0,0.12);}section.export-entry.note{background:rgba(255,140,0,0.12);}section.export-entry.reflection{background:rgba(0,255,200,0.12);}h3{margin:0 0 10px;}p{margin:0;line-height:1.6;}</style></head><body><h1>' + escapeHtml(currentWish.wish) + '</h1>' + items + '</body></html>');
+            popup.document.close();
+            popup.focus();
+            popup.print();
         }
 
         function viewStored() {
             const listDiv = document.getElementById('stored-list');
-            listDiv.style.display = 'block';
-            document.getElementById('wish-input').style.display = 'none';
-            document.getElementById('response').style.display = 'none';
-            document.getElementById('store-btn').style.display = 'none';
-            document.querySelector('button[onclick="processWish()"]').style.display = 'none';
-            document.querySelector('button[onclick="viewStored()"]').style.display = 'none';
-            let stored = JSON.parse(localStorage.getItem('reflections') || '[]');
+            const wishInput = document.getElementById('wish-input');
+            const responseDiv = document.getElementById('response');
+            const storeBtn = document.getElementById('store-btn');
+            const continueBtn = document.getElementById('continue-btn');
+            const exportBtn = document.getElementById('export-btn');
+            const followupWrapper = document.getElementById('followup-wrapper');
+            const submitBtn = document.getElementById('submit-btn');
+            const viewBtn = document.querySelector('.action-bar button.secondary');
+            const newWishBtn = document.getElementById('new-wish-btn');
+
+            if (listDiv) listDiv.style.display = 'block';
+            if (wishInput) wishInput.style.display = 'none';
+            if (responseDiv) responseDiv.style.display = 'none';
+            if (storeBtn) storeBtn.style.display = 'none';
+            if (continueBtn) continueBtn.style.display = 'none';
+            if (exportBtn) exportBtn.style.display = 'none';
+            if (followupWrapper) followupWrapper.style.display = 'none';
+            if (submitBtn) submitBtn.style.display = 'none';
+            if (viewBtn) viewBtn.style.display = 'none';
+            if (newWishBtn) newWishBtn.style.display = 'none';
+
+            const stored = JSON.parse(localStorage.getItem('reflections') || '[]');
             if (!stored.length) {
-                listDiv.innerHTML = '<button onclick="backToMain()" style="margin-bottom: 20px;">Back</button><p>No stored reflections yet.</p>';
+                if (listDiv) {
+                    listDiv.innerHTML = '<button onclick="backToMain()" style="margin-bottom: 20px;">Back</button><p>No stored reflections yet.</p>';
+                }
                 return;
             }
-            let html = '<button onclick="backToMain()" style="margin-bottom: 20px;">Back</button><ul>';
-            stored.forEach((item, i) => {
-                html += `<li><strong>Wish:</strong> ${item.wish}<br><strong>Reflection:</strong> ${item.reflection}<br>
-                    <button class="delete-btn" onclick="deleteReflection(${i})">Delete</button></li>`;
-            });
-            html += '</ul>';
-            listDiv.innerHTML = html;
+
+            const items = stored.map(function (entry, index) {
+                const wish = escapeHtml(entry && entry.wish ? entry.wish : '');
+                const timeline = entry && entry.timeline ? entry.timeline : null;
+                const history = entry && Array.isArray(entry.history) ? entry.history : [];
+                const fallback = history.length ? history.join('\n\n') : (entry && entry.reflection ? entry.reflection : '');
+                const body = timeline ? formatTimelineForDisplay(timeline) : formatStoredReflection(fallback);
+                return '<li><strong>Wish:</strong> ' + wish + '<div class="conversation-preview">' + body + '</div><div class="row-actions"><button class="delete-btn" onclick="deleteReflection(' + index + ')">Delete</button></div></li>';
+            }).join('');
+
+            if (listDiv) {
+                listDiv.innerHTML = '<button onclick="backToMain()" style="margin-bottom: 20px;">Back</button><ul>' + items + '</ul>';
+            }
         }
 
         function deleteReflection(index) {
-            showConfirm('Delete this reflection? The insight will be lost to the night.', () => {
-                let stored = JSON.parse(localStorage.getItem('reflections') || '[]');
+            showConfirm('Delete this reflection? The insight will be lost to the night.', function () {
+                const stored = JSON.parse(localStorage.getItem('reflections') || '[]');
+                if (index < 0 || index >= stored.length) return;
                 stored.splice(index, 1);
                 localStorage.setItem('reflections', JSON.stringify(stored));
                 viewStored();
             });
         }
 
+        function startNewWish() {
+            currentWish = null;
+            const wishInput = document.getElementById('wish-input');
+            const followupInput = document.getElementById('followup-input');
+            if (wishInput) {
+                wishInput.value = '';
+                wishInput.focus();
+            }
+            if (followupInput) followupInput.value = '';
+            renderReflections(false);
+            updateActionVisibility();
+        }
+
         function backToMain() {
             const listDiv = document.getElementById('stored-list');
             const wishInput = document.getElementById('wish-input');
             const responseDiv = document.getElementById('response');
-            const storeBtn = document.getElementById('store-btn');
-            const submitBtn = document.querySelector('button[onclick="processWish()"]');
-            const viewBtn = document.querySelector('button[onclick="viewStored()"]');
+            const submitBtn = document.getElementById('submit-btn');
+            const viewBtn = document.querySelector('.action-bar button.secondary');
 
             if (listDiv) listDiv.style.display = 'none';
             if (wishInput) wishInput.style.display = 'block';
-            if (responseDiv) {
+            if (responseDiv && currentWish && currentWish.timeline && currentWish.timeline.length) {
                 responseDiv.style.display = 'block';
-                responseDiv.classList.remove('reflecting');
             }
-            if (storeBtn) storeBtn.style.display = currentWish ? 'inline' : 'none';
-            if (submitBtn) submitBtn.style.display = 'block';
-            if (viewBtn) viewBtn.style.display = 'block';
+            if (submitBtn) submitBtn.style.display = 'inline-flex';
+            if (viewBtn) viewBtn.style.display = 'inline-flex';
+
+            renderReflections(false);
+            updateActionVisibility();
         }
+
+        function updateActionVisibility() {
+            const storeBtn = document.getElementById('store-btn');
+            const continueBtn = document.getElementById('continue-btn');
+            const exportBtn = document.getElementById('export-btn');
+            const followupWrapper = document.getElementById('followup-wrapper');
+            const newWishBtn = document.getElementById('new-wish-btn');
+            const followupInput = document.getElementById('followup-input');
+
+            const hasReflection = currentWish && currentWish.history && currentWish.history.length;
+            const isWaiting = currentWish && currentWish.waiting;
+            if (storeBtn) storeBtn.style.display = hasReflection ? 'inline-flex' : 'none';
+            if (exportBtn) exportBtn.style.display = hasReflection ? 'inline-flex' : 'none';
+            if (newWishBtn) newWishBtn.style.display = hasReflection ? 'inline-flex' : 'none';
+            if (followupWrapper) followupWrapper.style.display = hasReflection ? 'block' : 'none';
+            if (continueBtn) {
+                continueBtn.style.display = hasReflection ? 'inline-flex' : 'none';
+                const noteReady = followupInput && followupInput.value.trim().replace(/[^a-zA-Z0-9]/g, '').length >= 3;
+                continueBtn.disabled = isWaiting || !noteReady;
+            }
+        }
+
+        function escapeHtml(str) {
+            return String(str || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function formatTimelineForDisplay(timeline) {
+            if (!Array.isArray(timeline) || !timeline.length) return '';
+            return timeline.map(function (entry) {
+                const label = escapeHtml(entry.label || '');
+                const text = escapeHtml(entry.text || '').replace(/\n/g, '<br/>');
+                return '<div class="stored-event ' + (entry.type || 'note') + '"><strong>' + label + '</strong><p>' + text + '</p></div>';
+            }).join('');
+        }
+
+        function formatStoredReflection(text) {
+            return escapeHtml(text || '').replace(/\n/g, '<br/>');
+        }
+
+        function openGuide() {
+            const overlay = document.getElementById('guide-overlay');
+            if (!overlay) return;
+            overlay.classList.add('show');
+            overlay.setAttribute('aria-hidden', 'false');
+        }
+
+        function closeGuide() {
+            const overlay = document.getElementById('guide-overlay');
+            if (!overlay) return;
+            overlay.classList.remove('show');
+            overlay.setAttribute('aria-hidden', 'true');
+        }
+
+        const followupInput = document.getElementById('followup-input');
+        if (followupInput) followupInput.addEventListener('input', updateActionVisibility);
+
+        const guideOverlay = document.getElementById('guide-overlay');
+        const guideClose = document.getElementById('guide-close');
+        if (guideOverlay) guideOverlay.addEventListener('click', function (event) {
+            if (event.target === guideOverlay) closeGuide();
+        });
+        if (guideClose) guideClose.addEventListener('click', closeGuide);
 
         backToMain();
 
-        // Skip intro function
         function skipIntro() {
             document.getElementById('intro').classList.add('hidden');
             document.body.classList.remove('intro-active');
         }
 
-        // Hide intro after 50 seconds or on tap/skip
         setTimeout(skipIntro, 50000);
         document.getElementById('intro').addEventListener('touchstart', skipIntro);
     </script>
 </body>
 </html>
+
+
 
 
 
