@@ -161,9 +161,13 @@
         }
         button { background: linear-gradient(#ffd700, #ffcc00); color: #333; } 
         button:hover { transform: scale(1.05); box-shadow: 0 0 15px rgba(255,215,0,0.8); }
+        .delete-btn { background: linear-gradient(#e74c3c, #c0392b); color: #fff; }
+        .delete-btn:hover { box-shadow: 0 0 15px rgba(231,76,60,0.8); }
         input { background: rgba(255,255,255,0.15); color: #fff; width: 85%; border: 1px solid rgba(255,255,255,0.3); }
-        #response { margin-top: 20px; font-style: italic; opacity: 0; transition: opacity 2s ease-in-out; text-shadow: 0 0 5px rgba(0,0,0,0.7); /* Shadow for readability */ } /* Slower fade */
+        #response { margin-top: 20px; font-style: italic; opacity: 0; transition: opacity 0.6s ease-in-out; text-shadow: 0 0 5px rgba(0,0,0,0.7); }
         #response.visible { opacity: 1; }
+        #response.with-delay { opacity: 0; }
+        #response.with-delay.show { opacity: 1; transition: opacity 0.8s ease-in-out; }
         #response.reflecting { animation: pulse 1.5s infinite; }
         #stored-list { margin-top: 20px; display: none; width: 100%; background: rgba(0,0,0,0.5); /* Darker tint for readability */ padding: 15px; border-radius: 10px; }
         #stored-list ul { list-style: none; padding: 0; }
@@ -233,14 +237,13 @@
 </head>
 <body class="intro-active">
     <div id="intro">
-        <h1>Happy Birthday, Diana<3</h1>
-        <p>It all began with a simple message under the glow of the northern lights: 'I know we don't know each other, but you're living my dream...' From that unexpected spark, it blossomed into discovering a truly wonderful soul—one I care for deeply, respect immensely, and always strive to stand by, no matter where life takes us. Birthdays aren't just for you; they're a beautiful reminder for those who cherish you, celebrating the joy of being woven into your incredible story.</p>
+        <h1>Happy Birthday, Diana&#10084;&#65039;</h1>
+        <p>"It all began with a simple message under the glow of the northern lights: 'I know we don't know each other, but you're living my dream...' From that unexpected spark, it blossomed into discovering a truly wonderful soulβ€”one I care for deeply, respect immensely, and always strive to stand by, no matter where life takes us. Birthdays aren't just for you; they're a beautiful reminder for those who cherish you, celebrating the joy of being woven into your incredible story."</p>
         <div id="skip-text" onclick="skipIntro()">Tap to skip</div>
     </div>
     <div id="aurora">
         <video id="aurora-video" autoplay loop muted playsinline>
             <source src="
-
 
 https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Key-Pair-Id=APKAIEYUVEN4EVB2OKEQ&Signature=RzrhuSTXuLFZayv06DuP552QdiNtFPyMoLeShUnaZxurAjIbRwajLYZAZVN9WCGsjeJq9zHTmQiSUQngLyJyPJBHgyEtLFG1jgIP5Kjhz2-NSzlKBE6xwNLkDAM892rLpCmsLCj~ZpaoGYUysK3gYRc5oPSpWk66du6Vnm9WR1iq97SuTQxFjtP5HYRa6Bl3InLfzJkgTxbsdowtB1SgmuoIvtVBVA5EcWrP855YaWRTjd5tO~ech~v3ybQCODXfu8Xz9Z6bORAYmSXusEoKL~PgrSUE2Ha7IWU-DGXaTKYlxtY7m9oFcHBNTltKkIhUCGQ2iSJSkrYJM8zjGJ28KQ__" type="video/mp4">
         </video>
@@ -279,7 +282,7 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
         <div class="constellation"></div>
     </div>
     <div id="content">
-        <h1>Happy Birthday, Diana!</h1>
+        <h1>Make a wish!</h1>
         <p>Under this magical sky, make a wish and receive a reflective insight.</p>
         <input type="text" id="wish-input" placeholder="Type your wish here...">
         <button onclick="processWish()">Submit Wish</button>
@@ -291,7 +294,7 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
     </div>
     <div id="overlay">
         <div id="error-message">
-            <p>Oops, the stars aren't aligning right now. Please try again when your connection is stronger—your birthday magic awaits!</p>
+            <p>Oops, the stars aren't aligning right now. Please try again when your connection is stronger-your birthday magic awaits!</p>
             <button onclick="hideError()">Close</button>
         </div>
     </div>
@@ -305,11 +308,17 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
             const wish = document.getElementById('wish-input').value.trim();
             if (!wish) return alert('Enter a wish first!');
             const responseDiv = document.getElementById('response');
-            responseDiv.innerHTML = 'Reflecting on your wish...';
-            responseDiv.classList.add('visible', 'reflecting');
-            document.getElementById('store-btn').style.display = 'none';
+            const storeBtn = document.getElementById('store-btn');
+            const submitBtn = document.querySelector('button[onclick="processWish()"]');
 
-            const systemPrompt = `User's name is Diana. Respond to this wish: "${wish}". Create a motivational, self-reflective paragraph ending in a memorable phrase or quote. Encourage introspection, curiosity, and kindness. Make it insightful and true, prompting gentle self-questioning. Keep it unique, positive yet realistic, aligned with a curious, good-hearted person who values deep thought. Complete all sentences fully.`;
+            responseDiv.style.display = 'block';
+            responseDiv.classList.remove('with-delay', 'show');
+            responseDiv.textContent = 'Reflecting on your wish...';
+            responseDiv.classList.add('visible', 'reflecting');
+            if (storeBtn) storeBtn.style.display = 'none';
+            if (submitBtn) submitBtn.disabled = true;
+
+            const systemPrompt = `User's name is Diana. Respond to this wish: "${wish}". Create a motivational, self-reflective paragraph ending in a memorable phrase or quote. Encourage introspection, curiosity, and kindness. Make it insightful and true, prompting gentle self-questioning. Keep it unique every time, positive yet realistic, aligned with a curious, good-hearted person who values deep thought. Keep it to a single, fully-formed paragraph under 90 words.`;
 
             try {
                 const res = await fetch('/openai-proxy', {
@@ -319,15 +328,25 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
                 });
                 if (!res.ok) throw new Error('API error');
                 const data = await res.json();
-                const reflection = data.choices[0].message.content.trim();
-                responseDiv.classList.remove('reflecting');
-                responseDiv.innerHTML = reflection;
+                const choice = data && data.choices && data.choices[0];
+                const message = choice && choice.message && choice.message.content;
+                const reflection = (message || '').replace(/\s+/g, ' ').trim();
+                if (!reflection) throw new Error('Empty reflection');
+                responseDiv.classList.remove('reflecting', 'visible');
+                responseDiv.classList.remove('with-delay', 'show');
+                responseDiv.textContent = reflection;
+                responseDiv.classList.add('with-delay');
+                void responseDiv.offsetWidth;
+                responseDiv.classList.add('show');
                 currentWish = { wish, reflection };
-                document.getElementById('store-btn').style.display = 'inline';
+                if (storeBtn) storeBtn.style.display = 'inline';
             } catch (error) {
                 console.error(error);
-                responseDiv.innerHTML = '';
+                responseDiv.classList.remove('reflecting');
+                responseDiv.textContent = '';
                 showError();
+            } finally {
+                if (submitBtn) submitBtn.disabled = false;
             }
         }
 
@@ -360,7 +379,7 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
             let html = '<button onclick="backToMain()" style="margin-bottom: 20px;">Back</button><ul>';
             stored.forEach((item, i) => {
                 html += `<li><strong>Wish:</strong> ${item.wish}<br><strong>Reflection:</strong> ${item.reflection}<br>
-                    <button onclick="deleteReflection(${i})">Delete</button></li>`;
+                    <button class="delete-btn" onclick="deleteReflection(${i})">Delete</button></li>`;
             });
             html += '</ul>';
             listDiv.innerHTML = html;
@@ -376,13 +395,25 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
         }
 
         function backToMain() {
-            document.getElementById('stored-list').style.display = 'none';
-            document.getElementById('wish-input').style.display = 'block';
-            document.getElementById('response').style.display = 'block';
-            document.getElementById('store-btn').style.display = 'none'; /* Reset if needed */
-            document.querySelector('button[onclick="processWish()"]').style.display = 'block';
-            document.querySelector('button[onclick="viewStored()"]').style.display = 'block';
+            const listDiv = document.getElementById('stored-list');
+            const wishInput = document.getElementById('wish-input');
+            const responseDiv = document.getElementById('response');
+            const storeBtn = document.getElementById('store-btn');
+            const submitBtn = document.querySelector('button[onclick="processWish()"]');
+            const viewBtn = document.querySelector('button[onclick="viewStored()"]');
+
+            if (listDiv) listDiv.style.display = 'none';
+            if (wishInput) wishInput.style.display = 'block';
+            if (responseDiv) {
+                responseDiv.style.display = 'block';
+                responseDiv.classList.remove('reflecting');
+            }
+            if (storeBtn) storeBtn.style.display = currentWish ? 'inline' : 'none';
+            if (submitBtn) submitBtn.style.display = 'block';
+            if (viewBtn) viewBtn.style.display = 'block';
         }
+
+        backToMain();
 
         // Skip intro function
         function skipIntro() {
@@ -390,14 +421,12 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
             document.body.classList.remove('intro-active');
         }
 
-        // Hide intro after 40 seconds or on tap/skip
-        setTimeout(skipIntro, 40000);
+        // Hide intro after 50 seconds or on tap/skip
+        setTimeout(skipIntro, 50000);
         document.getElementById('intro').addEventListener('touchstart', skipIntro);
     </script>
 </body>
 </html>
-
-
 
 
 
