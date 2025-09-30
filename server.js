@@ -1,56 +1,436 @@
-require('dotenv').config(); // Loads .env
-const express = require('express');
-const path = require('path');
-const app = express();
-const port = process.env.PORT || 3000;
-
-app.use(express.json());
-app.use(express.static(path.join(__dirname, '.'))); // Serves index.html and static files
-
-// Proxy endpoint for OpenAI
-app.post('/openai-proxy', async (req, res) => {
-    const { prompt } = req.body;
-    const apiKey = process.env.OPENAI_API_KEY;
-    if (!apiKey) {
-        console.log('Error: API key missing from .env');
-        return res.status(500).json({ error: 'API key missing' });
-    }
-    console.log('Proxy received prompt:', prompt); // Log incoming
-
-    try {
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${apiKey}`
-            },
-            body: JSON.stringify({
-                model: 'gpt-3.5-turbo', // Switched to more stable model
-                messages: [
-                    { role: 'system', content: 'You are a wise oracle providing insightful reflections.' },
-                    { role: 'user', content: prompt }
-                ],
-                max_tokens: 150 // Keeps responses concise
-            })
-        });
-        const data = await response.json();
-        if (data.error) {
-            console.error('OpenAI API error:', data.error);
-            return res.status(500).json({ error: data.error });
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Birthday Reflection</title>
+    <style>
+        body {
+            margin: 0 auto;
+            padding: 0;
+            min-height: 100vh;
+            overflow: auto;
+            font-family: 'Georgia', serif;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; /* Center vertically */
+            text-align: center;
+            background: #000;
+            touch-action: manipulation;
+            -webkit-overflow-scrolling: touch;
+            max-width: 480px; /* Force phone-like layout on larger screens */
         }
-        console.log('OpenAI success:', data.choices[0].message.content); // Log success
-        res.json(data);
-    } catch (error) {
-        console.error('Proxy catch error:', error.message); // Detailed log
-        res.status(500).json({ error: 'Proxy error: ' + error.message });
-    }
-});
+        body.intro-active #content,
+        body.intro-active #aurora {
+            filter: blur(5px); /* Blur background when intro is active */
+            pointer-events: none; /* Prevent interaction */
+        }
+        #overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        #error-message {
+            background: #222;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 80%;
+        }
+        #aurora {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            animation: fadeIn 2s ease-in forwards;
+            overflow: hidden;
+            z-index: 1;
+        }
+        #aurora-video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            transform: translate(-50%, -50%);
+            object-fit: cover;
+            filter: brightness(0.8); /* Subtle dim for text readability */
+        }
+        /* Stars for immersion (optional overlay on video) */
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 2s infinite alternate;
+            opacity: 0.8;
+        }
+        @keyframes twinkle {
+            0% { opacity: 0.5; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        /* Example stars */
+        .star:nth-child(1) { top: 10%; left: 20%; width: 2px; height: 2px; animation-delay: 0s; }
+        .star:nth-child(2) { top: 15%; left: 50%; width: 3px; height: 3px; animation-delay: 0.5s; }
+        .star:nth-child(3) { top: 20%; left: 80%; width: 1px; height: 1px; animation-delay: 1s; }
+        .star:nth-child(4) { top: 25%; left: 30%; width: 2px; height: 2px; animation-delay: 1.5s; }
+        .star:nth-child(5) { top: 30%; left: 60%; width: 1px; height: 1px; animation-delay: 0.2s; }
+        .star:nth-child(6) { top: 35%; left: 10%; width: 3px; height: 3px; animation-delay: 0.8s; }
+        .star:nth-child(7) { top: 40%; left: 70%; width: 2px; height: 2px; animation-delay: 1.2s; }
+        .star:nth-child(8) { top: 45%; left: 40%; width: 1px; height: 1px; animation-delay: 0.4s; }
+        .star:nth-child(9) { top: 50%; left: 90%; width: 2px; height: 2px; animation-delay: 1.0s; }
+        .star:nth-child(10) { top: 55%; left: 25%; width: 3px; height: 3px; animation-delay: 0.6s; }
+        .star:nth-child(11) { top: 60%; left: 55%; width: 1px; height: 1px; animation-delay: 1.4s; }
+        .star:nth-child(12) { top: 65%; left: 15%; width: 2px; height: 2px; animation-delay: 0.3s; }
+        .star:nth-child(13) { top: 70%; left: 85%; width: 3px; height: 3px; animation-delay: 0.9s; }
+        .star:nth-child(14) { top: 75%; left: 35%; width: 1px; height: 1px; animation-delay: 1.3s; }
+        .star:nth-child(15) { top: 80%; left: 65%; width: 2px; height: 2px; animation-delay: 0.7s; }
+        .star:nth-child(16) { top: 85%; left: 5%; width: 3px; height: 3px; animation-delay: 1.1s; }
+        .star:nth-child(17) { top: 90%; left: 45%; width: 1px; height: 1px; animation-delay: 0.1s; }
+        .star:nth-child(18) { top: 95%; left: 75%; width: 2px; height: 2px; animation-delay: 1.6s; }
+        .star:nth-child(19) { top: 5%; left: 95%; width: 3px; height: 3px; animation-delay: 0.0s; }
+        .star:nth-child(20) { top: 8%; left: 5%; width: 1px; height: 1px; animation-delay: 1.7s; }
+        .star:nth-child(21) { top: 12%; left: 35%; width: 2px; height: 2px; animation-delay: 0.4s; }
+        .star:nth-child(22) { top: 18%; left: 65%; width: 3px; height: 3px; animation-delay: 1.0s; }
+        .star:nth-child(23) { top: 22%; left: 15%; width: 1px; height: 1px; animation-delay: 0.6s; }
+        .star:nth-child(24) { top: 28%; left: 85%; width: 2px; height: 2px; animation-delay: 1.2s; }
+        .star:nth-child(25) { top: 32%; left: 25%; width: 3px; height: 3px; animation-delay: 0.8s; }
+        .star:nth-child(26) { top: 38%; left: 55%; width: 1px; height: 1px; animation-delay: 1.4s; }
+        .star:nth-child(27) { top: 42%; left: 95%; width: 2px; height: 2px; animation-delay: 0.2s; }
+        .star:nth-child(28) { top: 48%; left: 5%; width: 3px; height: 3px; animation-delay: 0.9s; }
+        .star:nth-child(29) { top: 52%; left: 45%; width: 1px; height: 1px; animation-delay: 1.5s; }
+        .star:nth-child(30) { top: 58%; left: 75%; width: 2px; height: 2px; animation-delay: 0.5s; }
+        /* Constellations: Simple line example (Orion-like) */
+        .constellation {
+            position: absolute;
+            top: 30%;
+            left: 40%;
+            width: 100px;
+            height: 100px;
+        }
+        .constellation::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 20px; height: 2px; background: rgba(255,255,255,0.3); transform: rotate(45deg);
+        }
+        .constellation::after {
+            content: '';
+            position: absolute;
+            top: 20px; left: 30px; width: 30px; height: 2px; background: rgba(255,255,255,0.3); transform: rotate(-30deg);
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes glow { 0% { text-shadow: 0 0 5px #ffd700; } 50% { text-shadow: 0 0 15px #ffd700; } 100% { text-shadow: 0 0 5px #ffd700; } }
+        @keyframes pulse { 0% { opacity: 0.5; transform: scale(1); } 50% { opacity: 1; transform: scale(1.05); } 100% { opacity: 0.5; transform: scale(1); } } /* For reflecting text */
+        #content {
+            position: relative;
+            z-index: 10;
+            padding: 30px;
+            max-width: 80%;
+            opacity: 0;
+            animation: fadeIn 2s ease-in 3s forwards;
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,255,200,0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%; /* Full width for mobile */
+        }
+        h1 { font-size: 2.5em; animation: glow 4s infinite; }
+        p { font-size: 1.2em; font-style: italic; }
+        button, input { 
+            padding: 12px 24px; 
+            margin: 12px; 
+            border: none; 
+            border-radius: 8px; 
+            font-size: 1em; 
+            cursor: pointer; 
+            transition: transform 0.3s, box-shadow 0.3s; 
+            box-shadow: 0 0 10px rgba(255,215,0,0.5);
+        }
+        button { background: linear-gradient(#ffd700, #ffcc00); color: #333; } 
+        button:hover { transform: scale(1.05); box-shadow: 0 0 15px rgba(255,215,0,0.8); }
+        .delete-btn { background: linear-gradient(#e74c3c, #c0392b); color: #fff; }
+        .delete-btn:hover { box-shadow: 0 0 15px rgba(231,76,60,0.8); }
+        input { background: rgba(255,255,255,0.15); color: #fff; width: 85%; border: 1px solid rgba(255,255,255,0.3); }
+        #response { margin-top: 20px; font-style: italic; opacity: 0; transition: opacity 0.6s ease-in-out; text-shadow: 0 0 5px rgba(0,0,0,0.7); }
+        #response.visible { opacity: 1; }
+        #response.with-delay { opacity: 0; }
+        #response.with-delay.show { opacity: 1; transition: opacity 0.8s ease-in-out; }
+        #response.reflecting { animation: pulse 1.5s infinite; }
+        #stored-list { margin-top: 20px; display: none; width: 100%; background: rgba(0,0,0,0.5); /* Darker tint for readability */ padding: 15px; border-radius: 10px; }
+        #stored-list ul { list-style: none; padding: 0; }
+        #stored-list li { margin: 15px 0; background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,255,200,0.1); }
+        /* Responsive */
+        @media (max-width: 768px) { h1 { font-size: 2em; } #content { padding: 20px; } }
+        #intro {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0,0,0,0.8);
+            z-index: 20;
+            opacity: 1;
+            transition: opacity 2s ease-in-out; /* Smoother, slower fade */
+        }
+        #intro.hidden { opacity: 0; pointer-events: none; }
+        #intro h1 {
+            font-size: 3em;
+            perspective: 1000px;
+            animation: flipIn 2s ease-in-out;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5), 0 0 20px rgba(0,255,200,0.3); /* Fade shadow for readability */
+        }
+        #intro p {
+            max-width: 80%;
+            font-size: 1.2em;
+            opacity: 0;
+            animation: fadeInText 2s ease-in 2s forwards;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5), 0 0 20px rgba(0,255,200,0.3); /* Fade shadow for readability */
+        }
+        #skip-text {
+            font-size: 0.9em;
+            color: #ffd700;
+            cursor: pointer;
+            margin-top: 20px;
+            text-decoration: underline;
+        }
+        @keyframes flipIn {
+            0% { transform: rotateY(-180deg); opacity: 0; }
+            100% { transform: rotateY(0); opacity: 1; }
+        }
+        @keyframes fadeInText {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        /* Mobile adjustments for intro */
+        @media (max-width: 768px) { 
+            #intro h1 { font-size: 2.2em; }
+            #intro p { font-size: 1em; max-width: 90%; }
+        }
+        #stored-message {
+            font-size: 0.8em;
+            color: #ffd700;
+            opacity: 0;
+            transition: opacity 1s;
+            margin-top: 5px;
+        }
+        #stored-message.visible {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="intro-active">
+    <div id="intro">
+        <h1>Happy Birthday, Diana<3<3</h1>
+        <p>"It all began with a simple message under the glow of the northern lights: 'I know we don't know each other, but you're living my dream...' From that unexpected spark, it blossomed into discovering a truly wonderful soul—one I care for deeply, respect immensely, and always strive to stand by, no matter where life takes us. Birthdays aren't just for you; they're a beautiful reminder for those who cherish you, celebrating the joy of being woven into your incredible story."</p>
+        <div id="skip-text" onclick="skipIntro()">Tap to skip</div>
+    </div>
+    <div id="aurora">
+        <video id="aurora-video" autoplay loop muted playsinline>
+            <source src="
 
-// Catch-all to serve index.html for frontend
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
+https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Key-Pair-Id=APKAIEYUVEN4EVB2OKEQ&Signature=RzrhuSTXuLFZayv06DuP552QdiNtFPyMoLeShUnaZxurAjIbRwajLYZAZVN9WCGsjeJq9zHTmQiSUQngLyJyPJBHgyEtLFG1jgIP5Kjhz2-NSzlKBE6xwNLkDAM892rLpCmsLCj~ZpaoGYUysK3gYRc5oPSpWk66du6Vnm9WR1iq97SuTQxFjtP5HYRa6Bl3InLfzJkgTxbsdowtB1SgmuoIvtVBVA5EcWrP855YaWRTjd5tO~ech~v3ybQCODXfu8Xz9Z6bORAYmSXusEoKL~PgrSUE2Ha7IWU-DGXaTKYlxtY7m9oFcHBNTltKkIhUCGQ2iSJSkrYJM8zjGJ28KQ__" type="video/mp4">
+        </video>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="constellation"></div>
+    </div>
+    <div id="content">
+        <h1>Make a wish!</h1>
+        <p>Under this magical sky, make a wish and receive a reflective insight.</p>
+        <input type="text" id="wish-input" placeholder="Type your wish here...">
+        <button onclick="processWish()">Submit Wish</button>
+        <div id="response"></div>
+        <button id="store-btn" style="display:none;" onclick="storeReflection()">Store This Reflection</button>
+        <span id="stored-message">Wish stored!</span>
+        <button onclick="viewStored()">View Stored Reflections</button>
+        <div id="stored-list"></div>
+    </div>
+    <div id="overlay">
+        <div id="error-message">
+            <p>Oops, the stars aren't aligning right now. Please try again when your connection is stronger-your birthday magic awaits!</p>
+            <button onclick="hideError()">Close</button>
+        </div>
+    </div>
+    <script>
+        // Error handling
+        function showError() { document.getElementById('overlay').style.display = 'flex'; }
+        function hideError() { document.getElementById('overlay').style.display = 'none'; }
 
-app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
-});
+        // Process wish via proxy
+        async function processWish() {
+            const wish = document.getElementById('wish-input').value.trim();
+            if (!wish) return alert('Enter a wish first!');
+            const responseDiv = document.getElementById('response');
+            const storeBtn = document.getElementById('store-btn');
+            const submitBtn = document.querySelector('button[onclick="processWish()"]');
+
+            responseDiv.style.display = 'block';
+            responseDiv.classList.remove('with-delay', 'show');
+            responseDiv.textContent = 'Reflecting on your wish...';
+            responseDiv.classList.add('visible', 'reflecting');
+            if (storeBtn) storeBtn.style.display = 'none';
+            if (submitBtn) submitBtn.disabled = true;
+
+            const systemPrompt = `User's name is Diana. Respond to this wish: "${wish}". Create a motivational, self-reflective paragraph ending in a memorable phrase or quote. Encourage introspection, curiosity, and kindness. Make it insightful and true, prompting gentle self-questioning. Keep it unique every time, positive yet realistic, aligned with a curious, good-hearted person who values deep thought. Keep it to a single, fully-formed paragraph under 90 words.`;
+
+            try {
+                const res = await fetch('/openai-proxy', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: systemPrompt })
+                });
+                if (!res.ok) throw new Error('API error');
+                const data = await res.json();
+                const choice = data && data.choices && data.choices[0];
+                const message = choice && choice.message && choice.message.content;
+                const reflection = (message || '').replace(/\s+/g, ' ').trim();
+                if (!reflection) throw new Error('Empty reflection');
+                responseDiv.classList.remove('reflecting', 'visible');
+                responseDiv.classList.remove('with-delay', 'show');
+                responseDiv.textContent = reflection;
+                responseDiv.classList.add('with-delay');
+                void responseDiv.offsetWidth;
+                responseDiv.classList.add('show');
+                currentWish = { wish, reflection };
+                if (storeBtn) storeBtn.style.display = 'inline';
+            } catch (error) {
+                console.error(error);
+                responseDiv.classList.remove('reflecting');
+                responseDiv.textContent = '';
+                showError();
+            } finally {
+                if (submitBtn) submitBtn.disabled = false;
+            }
+        }
+
+        let currentWish = null;
+
+        // Storage
+        function storeReflection() {
+            if (!currentWish) return;
+            let stored = JSON.parse(localStorage.getItem('reflections') || '[]');
+            stored.push(currentWish);
+            localStorage.setItem('reflections', JSON.stringify(stored));
+            const storedMessage = document.getElementById('stored-message');
+            storedMessage.classList.add('visible');
+            setTimeout(() => storedMessage.classList.remove('visible'), 2000); // Hide after 2s
+        }
+
+        function viewStored() {
+            const listDiv = document.getElementById('stored-list');
+            listDiv.style.display = 'block';
+            document.getElementById('wish-input').style.display = 'none';
+            document.getElementById('response').style.display = 'none';
+            document.getElementById('store-btn').style.display = 'none';
+            document.querySelector('button[onclick="processWish()"]').style.display = 'none';
+            document.querySelector('button[onclick="viewStored()"]').style.display = 'none';
+            let stored = JSON.parse(localStorage.getItem('reflections') || '[]');
+            if (!stored.length) {
+                listDiv.innerHTML = '<button onclick="backToMain()" style="margin-bottom: 20px;">Back</button><p>No stored reflections yet.</p>';
+                return;
+            }
+            let html = '<button onclick="backToMain()" style="margin-bottom: 20px;">Back</button><ul>';
+            stored.forEach((item, i) => {
+                html += `<li><strong>Wish:</strong> ${item.wish}<br><strong>Reflection:</strong> ${item.reflection}<br>
+                    <button class="delete-btn" onclick="deleteReflection(${i})">Delete</button></li>`;
+            });
+            html += '</ul>';
+            listDiv.innerHTML = html;
+        }
+
+        function deleteReflection(index) {
+            if (confirm('Are you sure you want to delete this reflection?')) {
+                let stored = JSON.parse(localStorage.getItem('reflections') || '[]');
+                stored.splice(index, 1);
+                localStorage.setItem('reflections', JSON.stringify(stored));
+                viewStored();
+            }
+        }
+
+        function backToMain() {
+            const listDiv = document.getElementById('stored-list');
+            const wishInput = document.getElementById('wish-input');
+            const responseDiv = document.getElementById('response');
+            const storeBtn = document.getElementById('store-btn');
+            const submitBtn = document.querySelector('button[onclick="processWish()"]');
+            const viewBtn = document.querySelector('button[onclick="viewStored()"]');
+
+            if (listDiv) listDiv.style.display = 'none';
+            if (wishInput) wishInput.style.display = 'block';
+            if (responseDiv) {
+                responseDiv.style.display = 'block';
+                responseDiv.classList.remove('reflecting');
+            }
+            if (storeBtn) storeBtn.style.display = currentWish ? 'inline' : 'none';
+            if (submitBtn) submitBtn.style.display = 'block';
+            if (viewBtn) viewBtn.style.display = 'block';
+        }
+
+        backToMain();
+
+        // Skip intro function
+        function skipIntro() {
+            document.getElementById('intro').classList.add('hidden');
+            document.body.classList.remove('intro-active');
+        }
+
+        // Hide intro after 50 seconds or on tap/skip
+        setTimeout(skipIntro, 50000);
+        document.getElementById('intro').addEventListener('touchstart', skipIntro);
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
