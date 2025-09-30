@@ -627,29 +627,27 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
         <h1>Make a wish<span class="emoji-star" role="img" aria-label="star">⭐</span></h1>
         <p>Under this magical sky, make a wish and receive a reflective insight.</p>
         <button id="guide-button" class="icon" aria-label="How this works" onclick="openGuide()">?</button>
-        <div class="input-section">
-            <div class="wish-controls">
-                <div class="wish-field">
-                    <input type="text" id="wish-input" placeholder="Type your wish here..." autocomplete="off">
-                </div>
-                <div class="primary-actions">
-                    <button id="submit-btn" class="primary" onclick="processWish()">Submit Wish</button>
-                    <button id="new-wish-btn" class="ghost" style="display:none;" onclick="startNewWish()">Make a New Wish</button>
-                </div>
+        <div id="initial-controls" class="input-section">
+            <div class="wish-field">
+                <input type="text" id="wish-input" placeholder="Type your wish here..." autocomplete="off">
             </div>
-            <div id="followup-wrapper" style="display:none;">
-                <label for="followup-input">Share the next thought or question guiding you forward:</label>
-                <textarea id="followup-input" placeholder="Add a note before we continue..."></textarea>
+            <div class="primary-actions">
+                <button id="submit-btn" class="primary" onclick="processWish()">Submit Wish</button>
             </div>
         </div>
         <div id="response">
             <div id="conversation-track" class="timeline"></div>
             <div id="conversation-body" class="conversation"></div>
         </div>
+        <div id="followup-wrapper" class="followup-block" style="display:none;">
+            <label for="followup-input">Share the next thought or question guiding you forward:</label>
+            <textarea id="followup-input" placeholder="Add a note before we continue..."></textarea>
+        </div>
         <div class="action-bar">
             <button id="continue-btn" class="primary" style="display:none;" onclick="continueReflection()">Continue Reflection</button>
             <button id="store-btn" class="primary" style="display:none;" onclick="storeReflection()">Store This Reflection</button>
             <button id="export-btn" class="primary" style="display:none;" onclick="exportConversation()">Download Conversation</button>
+            <button id="new-wish-btn" class="ghost" style="display:none;" onclick="startNewWish()">Make a New Wish</button>
             <span id="stored-message">Wish stored!</span>
             <button class="secondary" onclick="viewStored()">View Stored Reflections</button>
         </div>
@@ -831,6 +829,7 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
             }, 60);
 
             updateActionVisibility();
+            focusFollowup();
         }
 
         const baseGuidance = 'You are Diana\'s steady inner voice. Respond with sincerity, curiosity, and gentle daring. Keep every reply under 90 words in a single paragraph and end with an original line that feels like a keepsake.';
@@ -1009,51 +1008,74 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
         }
 
         function viewStored() {
-            const listDiv = document.getElementById('stored-list');
-            const wishInput = document.getElementById('wish-input');
-            const responseDiv = document.getElementById('response');
-            const storeBtn = document.getElementById('store-btn');
-            const continueBtn = document.getElementById('continue-btn');
-            const exportBtn = document.getElementById('export-btn');
-            const followupWrapper = document.getElementById('followup-wrapper');
-            const submitBtn = document.getElementById('submit-btn');
-            const viewBtn = document.querySelector('.action-bar button.secondary');
-            const newWishBtn = document.getElementById('new-wish-btn');
 
-            if (listDiv) listDiv.style.display = 'block';
-            if (wishInput) wishInput.style.display = 'none';
-            if (responseDiv) responseDiv.style.display = 'none';
-            if (storeBtn) storeBtn.style.display = 'none';
-            if (continueBtn) continueBtn.style.display = 'none';
-            if (exportBtn) exportBtn.style.display = 'none';
-            if (followupWrapper) followupWrapper.style.display = 'none';
-            if (submitBtn) submitBtn.style.display = 'none';
-            if (viewBtn) viewBtn.style.display = 'none';
-            if (newWishBtn) newWishBtn.style.display = 'none';
+    const listDiv = document.getElementById('stored-list');
 
-            const stored = JSON.parse(localStorage.getItem('reflections') || '[]');
-            if (!stored.length) {
-                if (listDiv) {
-                    listDiv.innerHTML = '<button onclick="backToMain()" style="margin-bottom: 20px;">Back</button><p>No stored reflections yet.</p>';
-                }
-                return;
-            }
+    const responseDiv = document.getElementById('response');
 
-            const items = stored.map(function (entry, index) {
-                const wish = escapeHtml(entry && entry.wish ? entry.wish : '');
-                const timeline = entry && entry.timeline ? entry.timeline : null;
-                const history = entry && Array.isArray(entry.history) ? entry.history : [];
-                const fallback = history.length ? history.join('\n\n') : (entry && entry.reflection ? entry.reflection : '');
-                const body = timeline ? formatTimelineForDisplay(timeline) : formatStoredReflection(fallback);
-                return '<li><strong>Wish:</strong> ' + wish + '<div class="conversation-preview">' + body + '</div><div class="row-actions"><button class="delete-btn" onclick="deleteReflection(' + index + ')">Delete</button></div></li>';
-            }).join('');
+    const followupWrapper = document.getElementById('followup-wrapper');
 
-            if (listDiv) {
-                listDiv.innerHTML = '<button onclick="backToMain()" style="margin-bottom: 20px;">Back</button><ul>' + items + '</ul>';
-            }
+    const actionBar = document.querySelector('.action-bar');
+
+    const initialControls = document.getElementById('initial-controls');
+
+
+
+    if (listDiv) listDiv.style.display = 'block';
+
+    if (responseDiv) responseDiv.style.display = 'none';
+
+    if (followupWrapper) followupWrapper.style.display = 'none';
+
+    if (actionBar) actionBar.style.display = 'none';
+
+    if (initialControls) initialControls.style.display = 'none';
+
+
+
+    const stored = JSON.parse(localStorage.getItem('reflections') || '[]');
+
+    if (!stored.length) {
+
+        if (listDiv) {
+
+            listDiv.innerHTML = '<button onclick="backToMain()" style="margin-bottom: 20px;">Back</button><p>No stored reflections yet.</p>';
+
         }
 
-        function deleteReflection(index) {
+        return;
+
+    }
+
+
+
+    const items = stored.map(function (entry, index) {
+
+        const wish = escapeHtml(entry && entry.wish ? entry.wish : '');
+
+        const timeline = entry && entry.timeline ? entry.timeline : null;
+
+        const history = entry && Array.isArray(entry.history) ? entry.history : [];
+
+        const fallback = history.length ? history.join('\n\n') : (entry && entry.reflection ? entry.reflection : '');
+
+        const body = timeline ? formatTimelineForDisplay(timeline) : formatStoredReflection(fallback);
+
+        return '<li><strong>Wish:</strong> ' + wish + '<div class="conversation-preview">' + body + '</div><div class="row-actions"><button class="delete-btn" onclick="deleteReflection(' + index + ')">Delete</button></div></li>';
+
+    }).join('');
+
+
+
+    if (listDiv) {
+
+        listDiv.innerHTML = '<button onclick="backToMain()" style="margin-bottom: 20px;">Back</button><ul>' + items + '</ul>';
+
+    }
+
+}
+
+function deleteReflection(index) {
             showConfirm('Delete this reflection? The insight will be lost to the night.', function () {
                 const stored = JSON.parse(localStorage.getItem('reflections') || '[]');
                 if (index < 0 || index >= stored.length) return;
@@ -1077,42 +1099,82 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
         }
 
         function backToMain() {
+
             const listDiv = document.getElementById('stored-list');
-            const wishInput = document.getElementById('wish-input');
+
             const responseDiv = document.getElementById('response');
-            const submitBtn = document.getElementById('submit-btn');
-            const viewBtn = document.querySelector('.action-bar button.secondary');
+
+            const actionBar = document.querySelector('.action-bar');
+
+            const initialControls = document.getElementById('initial-controls');
+
+            const followupWrapper = document.getElementById('followup-wrapper');
 
             if (listDiv) listDiv.style.display = 'none';
-            if (wishInput) wishInput.style.display = 'block';
+
+            if (actionBar) actionBar.style.display = '';
+
+            if (initialControls) initialControls.style.display = '';
+
             if (responseDiv && currentWish && currentWish.timeline && currentWish.timeline.length) {
+
                 responseDiv.style.display = 'block';
+
             }
-            if (submitBtn) submitBtn.style.display = 'inline-flex';
-            if (viewBtn) viewBtn.style.display = 'inline-flex';
+
+            if (followupWrapper && currentWish && currentWish.history && currentWish.history.length) {
+
+                followupWrapper.style.display = 'block';
+
+            }
 
             renderReflections(false);
+
             updateActionVisibility();
+
         }
 
-        function updateActionVisibility() {
+
+
+function updateActionVisibility() {
             const storeBtn = document.getElementById('store-btn');
             const continueBtn = document.getElementById('continue-btn');
             const exportBtn = document.getElementById('export-btn');
             const followupWrapper = document.getElementById('followup-wrapper');
             const newWishBtn = document.getElementById('new-wish-btn');
             const followupInput = document.getElementById('followup-input');
-
+            const initialControls = document.getElementById('initial-controls');
+            const submitBtn = document.getElementById('submit-btn');
             const hasReflection = currentWish && currentWish.history && currentWish.history.length;
             const isWaiting = currentWish && currentWish.waiting;
+            const showInitial = !(currentWish && (isWaiting || hasReflection));
+            if (initialControls) {
+                initialControls.style.display = showInitial ? 'flex' : 'none';
+            }
+            if (submitBtn) {
+                submitBtn.disabled = !!(currentWish && currentWish.waiting);
+            }
             if (storeBtn) storeBtn.style.display = hasReflection ? 'inline-flex' : 'none';
             if (exportBtn) exportBtn.style.display = hasReflection ? 'inline-flex' : 'none';
             if (newWishBtn) newWishBtn.style.display = hasReflection ? 'inline-flex' : 'none';
-            if (followupWrapper) followupWrapper.style.display = hasReflection ? 'block' : 'none';
+            if (followupWrapper) followupWrapper.style.display = hasReflection ? 'flex' : 'none';
+            if (followupInput) {
+                followupInput.disabled = !hasReflection || isWaiting;
+                if (!hasReflection) followupInput.value = '';
+            }
             if (continueBtn) {
                 continueBtn.style.display = hasReflection ? 'inline-flex' : 'none';
                 const noteReady = followupInput && followupInput.value.trim().replace(/[^a-zA-Z0-9]/g, '').length >= 3;
-                continueBtn.disabled = isWaiting || !noteReady;
+                continueBtn.disabled = !hasReflection || isWaiting || !noteReady;
+            }
+        }
+
+        function focusFollowup() {
+            const followupInput = document.getElementById('followup-input');
+            if (followupInput && !followupInput.disabled && followupInput.offsetParent !== null) {
+                setTimeout(function () {
+                    followupInput.focus({ preventScroll: false });
+                }, 200);
             }
         }
 
@@ -1188,3 +1250,117 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
 
 
 
+        #content {
+            position: relative;
+            width: 100%;
+            max-width: 420px;
+            padding: 30px 20px 120px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            align-items: stretch;
+            box-sizing: border-box;
+        }
+        #content > * { width: 100%; }
+        .input-section {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            align-items: stretch;
+            margin: 0;
+        }
+        .input-section .wish-field input {
+            width: 100%;
+        }
+        .primary-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: stretch;
+        }
+        .primary-actions button {
+            width: 100%;
+        }
+        .followup-block {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: rgba(0,0,0,0.35);
+            border: 1px solid rgba(0,255,200,0.2);
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 18px 32px rgba(0,0,0,0.25);
+            backdrop-filter: blur(6px);
+        }
+        #followup-wrapper label {
+            font-size: 0.92em;
+            letter-spacing: 0.5px;
+            color: rgba(255,255,255,0.85);
+            margin-bottom: 4px;
+        }
+        #followup-input {
+            width: 100%;
+            min-height: 84px;
+            resize: vertical;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(0,255,200,0.25);
+            background: rgba(0,0,0,0.4);
+            color: #fff;
+            font-family: 'Georgia', serif;
+            box-shadow: inset 0 0 12px rgba(0,255,200,0.08);
+            transition: border 0.3s ease, box-shadow 0.3s ease;
+        }
+        #followup-input:focus {
+            border-color: rgba(0,255,200,0.65);
+            box-shadow: inset 0 0 18px rgba(0,255,200,0.18);
+            outline: none;
+        }
+        #response {
+            width: 100%;
+            margin-top: 0;
+            background: rgba(0,0,0,0.35);
+            border: 1px solid rgba(0,255,200,0.25);
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 0 24px rgba(0,255,200,0.15);
+            display: none;
+            opacity: 0;
+        }
+        #response.visible { opacity: 1; }
+        #response.with-delay { opacity: 0; }
+        #response.with-delay.show { opacity: 1; transition: opacity 0.8s ease-in-out; }
+        #response .bubble + .bubble { margin-top: 8px; }
+        .action-bar {
+            position: sticky;
+            bottom: 16px;
+            background: rgba(2, 25, 35, 0.88);
+            border: 1px solid rgba(0,255,200,0.25);
+            border-radius: 18px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: stretch;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.45);
+            backdrop-filter: blur(10px);
+            z-index: 11;
+        }
+        .action-bar button {
+            width: 100%;
+        }
+        .action-bar span#stored-message {
+            text-align: center;
+            margin-top: 6px;
+        }
+        button.icon {
+            z-index: 12;
+        }
+        @media (max-width: 540px) {
+            #content {
+                padding: 26px 16px 110px;
+                max-width: 100%;
+            }
+            .primary-actions { gap: 8px; }
+            #conversation-body { max-height: 300px; }
+        }
