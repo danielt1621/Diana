@@ -25,12 +25,14 @@ app.post('/openai-proxy', async (req, res) => {
                 'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: 'gpt-3.5-turbo', // Switched to more stable model
+                model: 'gpt-4o-mini',
                 messages: [
-                    { role: 'system', content: 'You are a wise oracle providing insightful reflections.' },
+                    { role: 'system', content: 'You are Diana\'s steady inner companion. You read her wishes with empathy and clarity, celebrate her curiosity and ambition, and respond with grounded insight that invites courageous, focused reflection.' },
                     { role: 'user', content: prompt }
                 ],
-                max_tokens: 150 // Keeps responses concise
+                max_tokens: 300,
+                temperature: 0.7,
+                presence_penalty: 0.3
             })
         });
         const data = await response.json();
