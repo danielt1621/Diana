@@ -9,14 +9,14 @@
             box-sizing: border-box;
         }
         :root {
-            --shell-max-width: clamp(320px, 92vw, 720px);
-            --content-radius: clamp(18px, 5vw, 30px);
-            --content-padding-block: clamp(22px, 6vw, 38px);
-            --content-padding-inline: clamp(18px, 6vw, 34px);
+            --shell-max-width: clamp(320px, 94vw, 760px);
+            --content-radius: clamp(18px, 5vw, 32px);
+            --content-padding-block: clamp(24px, 7vw, 40px);
+            --content-padding-inline: clamp(14px, 4.6vw, 32px);
             --body-padding-top: clamp(20px, 6vh, 72px);
             --body-padding-bottom: clamp(32px, 8vh, 100px);
-            --body-padding-inline: clamp(12px, 6vw, 40px);
-            --section-gap: clamp(16px, 4vh, 32px);
+            --body-padding-inline: clamp(10px, 5vw, 38px);
+            --section-gap: clamp(18px, 4vh, 34px);
             --me-accent: rgba(255, 215, 0, 0.85);
             --guide-accent: rgba(0, 255, 200, 0.9);
         }
@@ -44,8 +44,10 @@
         }
         .app-shell {
             position: relative;
-            width: min(100%, var(--shell-max-width));
+            width: 100%;
+            max-width: var(--shell-max-width);
             margin: 0 auto;
+            padding-inline: clamp(6px, 2vw, 18px);
             display: flex;
             flex-direction: column;
             align-items: stretch;
@@ -134,10 +136,10 @@
             width: 100%;
             background: rgba(8, 26, 38, 0.82);
             border-radius: var(--content-radius);
-            padding: var(--content-padding-block) var(--content-padding-inline);
+            padding: calc(var(--content-padding-block) + clamp(12px, 4vw, 24px)) var(--content-padding-inline) clamp(26px, 6vw, 36px);
             display: flex;
             flex-direction: column;
-            gap: clamp(18px, 4vw, 32px);
+            gap: clamp(20px, 4.5vw, 34px);
             align-items: stretch;
             text-align: center;
             box-shadow: 0 32px 60px rgba(0, 0, 0, 0.36);
@@ -218,8 +220,9 @@
         }
         #guide-button {
             position: absolute;
-            top: 16px;
-            right: 16px;
+            top: clamp(12px, 4vw, 22px);
+            right: clamp(12px, 4vw, 22px);
+            z-index: 2;
         }
         input, textarea {
             width: 100%;
@@ -320,7 +323,7 @@
         #conversation-body::-webkit-scrollbar { width: 6px; }
         #conversation-body::-webkit-scrollbar-thumb { background: rgba(0,255,200,0.44); border-radius: 6px; }
         .bubble {
-            max-width: min(88%, 36rem);
+            max-width: min(96%, 40rem);
             padding: clamp(14px, 4vw, 20px);
             border-radius: clamp(16px, 4vw, 24px);
             line-height: 1.55;
@@ -335,6 +338,7 @@
             animation: fadeSlide 0.45s ease;
         }
         .bubble.me {
+            align-self: flex-end;
             margin-left: auto;
             background: linear-gradient(135deg, rgba(255,215,0,0.22), rgba(0,0,0,0.55));
             border-color: rgba(255,215,0,0.45);
@@ -503,7 +507,10 @@
         }
         .saved-count {
             padding: 4px 10px;
+            min-width: 2.5em;
+            text-align: center;
             font-size: 0.8em;
+            font-weight: 600;
             border-radius: 999px;
             background: rgba(0,255,200,0.14);
             color: rgba(0,255,200,0.85);
@@ -737,7 +744,8 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 100%;
+            min-height: 100vh;
+            min-height: 100dvh;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -746,23 +754,29 @@
             z-index: 20;
             opacity: 1;
             transition: opacity 2s ease-in-out;
-            padding: var(--body-padding-top) clamp(18px, 6vw, 36px) var(--body-padding-bottom);
+            box-sizing: border-box;
+            padding: clamp(32px, 8vh, 72px) clamp(20px, 8vw, 44px);
             text-align: center;
-            gap: clamp(12px, 4vw, 28px);
+            gap: clamp(16px, 5vw, 32px);
         }
         #intro.hidden { opacity: 0; pointer-events: none; }
         #intro h1 {
-            font-size: clamp(2.2rem, 4vw + 1.6rem, 3rem);
+            font-size: clamp(2.1rem, 4vw + 1.5rem, 3.1rem);
             perspective: 1000px;
             animation: flipIn 2s ease-in-out;
             text-shadow: 0 0 10px rgba(0,0,0,0.5), 0 0 20px rgba(0,255,200,0.3);
+            max-width: min(28ch, 100%);
+            margin: 0;
+            text-wrap: balance;
         }
         #intro p {
-            max-width: min(560px, 90vw);
+            max-width: min(40ch, 100%);
             font-size: clamp(1.05rem, 2vw + 1rem, 1.35rem);
             opacity: 0;
             animation: fadeInText 2s ease-in 2s forwards;
             text-shadow: 0 0 10px rgba(0,0,0,0.5), 0 0 20px rgba(0,255,200,0.3);
+            margin: 0 auto;
+            text-wrap: pretty;
         }
         #skip-text {
             font-size: clamp(0.95rem, 0.4vw + 0.85rem, 1rem);
@@ -795,7 +809,7 @@
             .row-actions { justify-content: center; }
         }
         @media (max-width: 360px) {
-            #content { padding: clamp(20px, 6vw, 24px) clamp(16px, 5vw, 22px); }
+            #content { padding: calc(var(--content-padding-block) + clamp(6px, 4vw, 16px)) clamp(12px, 5vw, 20px) clamp(22px, 6vw, 32px); }
             button.icon { width: 34px; height: 34px; }
         }
         @media (min-width: 768px) {
@@ -913,7 +927,7 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
             
         <script>
         (() => {
-            const state = { currentWish: null, toastTimer: null, confirmAction: null, openSavedIndex: null };
+            const state = { currentWish: null, toastTimer: null, confirmAction: null, openSavedIndex: null, manualSavedCollapse: false };
 
             const id = (value) => document.getElementById(value);
             const qs = (value) => document.querySelector(value);
@@ -1346,6 +1360,7 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
                 stored.push(entry);
                 localStorage.setItem('reflections', JSON.stringify(stored));
                 state.openSavedIndex = stored.length - 1;
+                state.manualSavedCollapse = false;
                 showToast('Wish saved to your keepsakes.', 'info');
                 if (els.storedMessage) {
                     els.storedMessage.classList.add('visible');
@@ -1384,8 +1399,18 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
                     els.storedList.innerHTML = '<div class="stored-empty"><button class="back-button" onclick="backToMain()">Back</button><p>No stored reflections yet.</p></div>';
                     return;
                 }
-                if (state.openSavedIndex !== null && (state.openSavedIndex < 0 || state.openSavedIndex >= stored.length)) {
+                const total = stored.length;
+                if (total) {
+                    if (state.openSavedIndex === null) {
+                        if (!state.manualSavedCollapse) {
+                            state.openSavedIndex = total - 1;
+                        }
+                    } else if (state.openSavedIndex >= total) {
+                        state.openSavedIndex = total - 1;
+                    }
+                } else {
                     state.openSavedIndex = null;
+                    state.manualSavedCollapse = false;
                 }
                 const items = stored.map((entry, index) => {
                     const wishText = entry && entry.wish ? entry.wish : `Wish ${index + 1}`;
@@ -1400,14 +1425,15 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
                     const isOpen = state.openSavedIndex === index;
                     const details = formatTimelineForDisplay(timeline);
                     return `<li class="saved-item ${isOpen ? 'is-open' : ''}">` +
-                        `<button class="saved-toggle" type="button" data-index="${index}" aria-expanded="${isOpen}">` +
+                        `<button class="saved-toggle" type="button" data-index="${index}" aria-expanded="${isOpen}" aria-controls="saved-details-${index}">` +
                         `<span class="saved-title">${wish}</span>` +
                         `<span class="saved-count">${count}</span>` +
                         '<span class="saved-chevron" aria-hidden="true"></span>' +
                         '</button>' +
-                        `<div class="saved-details"${isOpen ? '' : ' hidden'} id="saved-details-${index}">` +
+                        `<div class="saved-details"${isOpen ? ' aria-hidden="false"' : ' hidden aria-hidden="true"'} id="saved-details-${index}">` +
                         `<div class="saved-conversation">${details}</div>` +
                         '<div class="row-actions">' +
+                        `<button class="secondary" onclick="exportStoredConversation(${index})">Download</button>` +
                         `<button class="delete-btn" onclick="deleteReflection(${index})">Delete</button>` +
                         '</div>' +
                         '</div>' +
@@ -1419,13 +1445,19 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
                         function toggleSavedItem(index) {
                 const stored = JSON.parse(localStorage.getItem('reflections') || '[]');
                 if (!stored.length || index < 0 || index >= stored.length) return;
-                state.openSavedIndex = state.openSavedIndex === index ? null : index;
+                if (state.openSavedIndex === index) {
+                    state.openSavedIndex = null;
+                    state.manualSavedCollapse = true;
+                } else {
+                    state.openSavedIndex = index;
+                    state.manualSavedCollapse = false;
+                }
                 renderStoredList();
             }
 
                                     function viewStored() {
                 if (!els.storedList) return;
-                state.openSavedIndex = null;
+                state.manualSavedCollapse = false;
                 els.storedList.style.display = 'block';
                 if (els.response) els.response.style.display = 'none';
                 if (els.followupWrapper) els.followupWrapper.style.display = 'none';
@@ -1434,7 +1466,43 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
                 renderStoredList();
             }
 
-                        function deleteReflection(index) {
+                        function exportStoredConversation(index) {
+                const stored = JSON.parse(localStorage.getItem('reflections') || '[]');
+                if (!stored.length) {
+                    showToast('No stored reflections to download yet.', 'warn');
+                    return;
+                }
+                if (index < 0 || index >= stored.length) {
+                    showToast('That reflection could not be found.', 'error');
+                    return;
+                }
+                const entry = stored[index];
+                const timeline = Array.isArray(entry.timeline) && entry.timeline.length
+                    ? entry.timeline
+                    : [
+                        { type: 'me', label: 'Me', meta: 'Wish', text: entry && entry.wish ? entry.wish : '' },
+                        { type: 'guide', label: 'Diana', meta: 'Reflection', text: entry && entry.reflection ? entry.reflection : '' }
+                    ];
+                const normalized = timeline.map((item, idx) => normalizeTimelineEntry(item, idx));
+                const popup = window.open('', '_blank');
+                if (!popup) {
+                    showToast('Enable pop-ups to download the conversation.', 'error', 3500);
+                    return;
+                }
+                const items = normalized.map((entryItem) => {
+                    const headingMeta = entryItem.meta && entryItem.meta !== entryItem.label
+                        ? ` <small>${escapeHtml(entryItem.meta)}</small>`
+                        : '';
+                    const textContent = escapeHtml(entryItem.text || '').replace(/\r?\n/g, '<br/>');
+                    return `<section class="export-entry ${entryItem.type}"><h3>${escapeHtml(entryItem.label)}${headingMeta}</h3><p>${textContent}</p></section>`;
+                }).join('');
+                popup.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>${escapeHtml(entry.wish || 'Wish Reflection')}</title><style>body{font-family:Georgia,serif;padding:40px;background:#0b1c2a;color:#effff7;}h1{text-align:center;margin-bottom:30px;}section.export-entry{margin-bottom:24px;padding:18px;border-radius:12px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);}section.export-entry.me{background:rgba(255,215,0,0.12);border-color:rgba(255,215,0,0.35);}section.export-entry.guide{background:rgba(0,255,200,0.12);border-color:rgba(0,255,200,0.35);}section.export-entry h3{display:flex;justify-content:space-between;align-items:center;margin:0 0 10px;gap:12px;}section.export-entry h3 small{font-weight:normal;font-size:0.85em;color:#cbeaf5;}p{margin:0;line-height:1.6;}</style></head><body><h1>${escapeHtml(entry.wish || 'Wish Reflection')}</h1>${items}</body></html>`);
+                popup.document.close();
+                popup.focus();
+                popup.print();
+            }
+
+            function deleteReflection(index) {
                 showConfirm('Delete this reflection? The insight will be lost to the night.', () => {
                     const stored = JSON.parse(localStorage.getItem('reflections') || '[]');
                     if (index < 0 || index >= stored.length) return;
@@ -1445,6 +1513,7 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
                     } else if (state.openSavedIndex !== null && state.openSavedIndex > index) {
                         state.openSavedIndex -= 1;
                     }
+                    state.manualSavedCollapse = false;
                     renderStoredList();
                     showToast('Reflection removed.', 'info');
                 });
@@ -1453,6 +1522,7 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
                         function startNewWish() {
                 state.currentWish = null;
                 state.openSavedIndex = null;
+                state.manualSavedCollapse = false;
                 if (els.wishInput) {
                     els.wishInput.value = '';
                     els.wishInput.focus();
@@ -1464,6 +1534,7 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
 
                         function backToMain() {
                 state.openSavedIndex = null;
+                state.manualSavedCollapse = false;
                 if (els.storedList) {
                     els.storedList.style.display = 'none';
                     els.storedList.innerHTML = '';
@@ -1562,6 +1633,7 @@ function openGuide() {
             window.continueReflection = continueReflection;
             window.storeReflection = storeReflection;
             window.exportConversation = exportConversation;
+            window.exportStoredConversation = exportStoredConversation;
             window.viewStored = viewStored;
             window.deleteReflection = deleteReflection;
             window.startNewWish = startNewWish;
