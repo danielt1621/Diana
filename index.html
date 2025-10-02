@@ -24,6 +24,8 @@
             margin: 0;
             min-height: 100vh;
             min-height: 100dvh;
+            height: 100vh;
+            height: 100dvh;
             width: 100%;
             padding: var(--body-padding-top) var(--body-padding-inline) var(--body-padding-bottom);
             padding-top: calc(var(--body-padding-top) + env(safe-area-inset-top));
@@ -36,9 +38,8 @@
             justify-content: flex-start;
             align-items: center;
             text-align: center;
-            overflow-x: hidden;
+            overflow: hidden;
             touch-action: manipulation;
-            -webkit-overflow-scrolling: touch;
             gap: var(--section-gap);
             -webkit-text-size-adjust: 100%;
         }
@@ -52,6 +53,8 @@
             flex-direction: column;
             align-items: stretch;
             gap: var(--section-gap);
+            flex: 1;
+            min-height: 0;
         }
         body.intro-active .app-shell,
         body.intro-active #aurora {
@@ -146,6 +149,9 @@
             backdrop-filter: blur(14px);
             opacity: 0;
             animation: fadeIn 1.8s ease 1s forwards;
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
         }
         h1 {
             margin: 8px 0 6px;
@@ -259,13 +265,19 @@
             opacity: 0;
             transition: opacity 0.3s ease;
             backdrop-filter: blur(10px);
+            flex: 1;
+            min-height: 0;
+            flex-direction: column;
+            gap: clamp(16px, 3vw, 24px);
+        }
+        #response.is-visible,
+        #response.is-pending {
+            display: flex;
         }
         #response.is-visible {
-            display: block;
             opacity: 1;
         }
         #response.is-pending {
-            display: block;
             opacity: 0.65;
         }
         #conversation-track {
@@ -312,13 +324,18 @@
         .crumb.guide { color: var(--guide-accent); }
         .crumb.is-pending .crumb-dot { animation: pulse 1.2s ease-in-out infinite; }
         
-#conversation-body {
+        #conversation-body {
             display: flex;
             flex-direction: column;
             gap: clamp(12px, 3vw, 18px);
-            max-height: clamp(280px, 58vh, 520px);
+            flex: 1;
+            min-height: 0;
+            justify-content: flex-end;
             overflow-y: auto;
-            padding: clamp(10px, 3vw, 18px) clamp(6px, 3vw, 14px);
+            scrollbar-gutter: stable both-edges;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+            padding: clamp(6px, 2vw, 12px) clamp(6px, 3vw, 14px) clamp(12px, 3vw, 18px);
         }
         #conversation-body::-webkit-scrollbar { width: 6px; }
         #conversation-body::-webkit-scrollbar-thumb { background: rgba(0,255,200,0.44); border-radius: 6px; }
@@ -346,6 +363,7 @@
             text-align: right;
         }
         .bubble.guide {
+            align-self: flex-start;
             background: linear-gradient(135deg, rgba(0,255,200,0.18), rgba(0,0,0,0.48));
             border-color: rgba(0,255,200,0.35);
             box-shadow: 0 16px 34px rgba(0,255,200,0.16);
@@ -353,6 +371,7 @@
         .bubble.thinking {
             font-style: italic;
             opacity: 0.82;
+            align-self: center;
         }
         .bubble-header {
             display: flex;
@@ -418,7 +437,8 @@
             display: flex;
             flex-direction: column;
             gap: clamp(10px, 3vw, 14px);
-            margin-top: 6px;
+            margin-top: auto;
+            padding-top: clamp(12px, 3vw, 18px);
         }
         .action-bar button {
             width: 100%;
@@ -436,6 +456,12 @@
             border-radius: clamp(18px, 4vw, 24px);
             box-shadow: 0 28px 48px rgba(0,0,0,0.32);
             text-align: left;
+            max-height: 100%;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+            flex: 1;
+            min-height: 0;
         }
         .stored-header {
             display: flex;
@@ -758,8 +784,20 @@
             padding: clamp(32px, 8vh, 72px) clamp(20px, 8vw, 44px);
             text-align: center;
             gap: clamp(16px, 5vw, 32px);
+            overflow-y: auto;
+            overscroll-behavior: contain;
         }
-        #intro.hidden { opacity: 0; pointer-events: none; }
+        .intro-inner {
+            width: min(620px, 92vw);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: clamp(18px, 5vw, 32px);
+            text-align: center;
+            padding: clamp(12px, 4vw, 20px);
+        }
+
+#intro.hidden { opacity: 0; pointer-events: none; }
         #intro h1 {
             font-size: clamp(2.1rem, 4vw + 1.5rem, 3.1rem);
             perspective: 1000px;
@@ -783,7 +821,23 @@
             color: #ffd700;
             cursor: pointer;
             margin-top: clamp(16px, 4vw, 28px);
-            text-decoration: underline;
+            text-decoration: none;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 215, 0, 0.6);
+            padding: 10px 20px;
+            border-radius: 999px;
+            font-family: 'Georgia', serif;
+            letter-spacing: 0.4px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            appearance: none;
+        }
+        #skip-text:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 0 18px rgba(255,215,0,0.35);
+        }
+        #skip-text:focus-visible {
+            outline: 2px solid rgba(255,215,0,0.8);
+            outline-offset: 3px;
         }
         @keyframes flipIn {
             0% { transform: rotateY(-180deg); opacity: 0; }
@@ -819,9 +873,11 @@
 </head>
 <body class="intro-active">
     <div id="intro">
+        <div class="intro-inner">
         <h1>Happy Birthday, Diana<span class="emoji-heart" role="img" aria-label="love">❤️</span></h1>
         <p>"It all began with a simple message under the glow of the northern lights: 'I know we don't know each other, but you're living my dream...' From that unexpected spark, it blossomed into discovering a truly wonderful soul—one I care for deeply, respect immensely, and always strive to stand by, no matter where life takes us. Birthdays aren't just for you; they're a beautiful reminder for those who cherish you, celebrating the joy of being woven into your incredible story."</p>
-        <div id="skip-text" onclick="skipIntro()">Tap to skip</div>
+            <button id="skip-text" type="button">Tap to skip</button>
+        </div>
     </div>
     <div id="aurora">
         <video id="aurora-video" autoplay loop muted playsinline>
@@ -1183,7 +1239,7 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
 
                 if (!hasTimeline) {
                     if (current && current.waiting) {
-                        els.response.style.display = 'block';
+                        els.response.style.display = 'flex';
                         els.response.classList.remove('is-visible');
                         els.response.classList.add('is-pending');
                         const thinking = buildBubble({
@@ -1233,7 +1289,7 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
                     els.conversation.appendChild(thinking);
                 }
 
-                els.response.style.display = 'block';
+                els.response.style.display = 'flex';
                 if (animate) {
                     els.response.classList.remove('is-visible');
                     void els.response.offsetWidth;
@@ -1396,7 +1452,7 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
                 if (!els.storedList) return;
                 const stored = JSON.parse(localStorage.getItem('reflections') || '[]');
                 if (!stored.length) {
-                    els.storedList.innerHTML = '<div class="stored-empty"><button class="back-button" onclick="backToMain()">Back</button><p>No stored reflections yet.</p></div>';
+                    els.storedList.innerHTML = '<div class="stored-empty"><button class="back-button" type="button" onclick="backToMain()">Back</button><p>No stored reflections yet.</p></div>';
                     return;
                 }
                 const total = stored.length;
@@ -1433,16 +1489,16 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
                         `<div class="saved-details"${isOpen ? ' aria-hidden="false"' : ' hidden aria-hidden="true"'} id="saved-details-${index}">` +
                         `<div class="saved-conversation">${details}</div>` +
                         '<div class="row-actions">' +
-                        `<button class="secondary" onclick="exportStoredConversation(${index})">Download</button>` +
-                        `<button class="delete-btn" onclick="deleteReflection(${index})">Delete</button>` +
+                        `<button class="secondary" type="button" onclick="exportStoredConversation(${index})">Download</button>` +
+                        `<button class="delete-btn" type="button" onclick="deleteReflection(${index})">Delete</button>` +
                         '</div>' +
                         '</div>' +
                         '</li>';
                 }).join('');
-                els.storedList.innerHTML = `<div class="stored-header"><button class="back-button" onclick="backToMain()">Back</button></div><ul class="saved-list">${items}</ul>`;
+                els.storedList.innerHTML = `<div class="stored-header"><button class="back-button" type="button" onclick="backToMain()">Back</button></div><ul class="saved-list">${items}</ul>`;
             }
 
-                        function toggleSavedItem(index) {
+            function toggleSavedItem(index) {
                 const stored = JSON.parse(localStorage.getItem('reflections') || '[]');
                 if (!stored.length || index < 0 || index >= stored.length) return;
                 if (state.openSavedIndex === index) {
@@ -1466,7 +1522,7 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
                 renderStoredList();
             }
 
-                        function exportStoredConversation(index) {
+            function exportStoredConversation(index) {
                 const stored = JSON.parse(localStorage.getItem('reflections') || '[]');
                 if (!stored.length) {
                     showToast('No stored reflections to download yet.', 'warn');
@@ -1519,7 +1575,7 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
                 });
             }
 
-                        function startNewWish() {
+            function startNewWish() {
                 state.currentWish = null;
                 state.openSavedIndex = null;
                 state.manualSavedCollapse = false;
@@ -1532,7 +1588,7 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
                 updateActionVisibility();
             }
 
-                        function backToMain() {
+            function backToMain() {
                 state.openSavedIndex = null;
                 state.manualSavedCollapse = false;
                 if (els.storedList) {
@@ -1550,13 +1606,13 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
                 }
                 if (els.response) {
                     const hasTimeline = !!(state.currentWish && state.currentWish.timeline && state.currentWish.timeline.length);
-                    els.response.style.display = hasTimeline ? 'block' : 'none';
+                    els.response.style.display = hasTimeline ? 'flex' : 'none';
                 }
                 renderTimeline({ animate: false });
                 updateActionVisibility();
             }
 
-function openGuide() {
+            function openGuide() {
                 if (!els.guideOverlay) return;
                 els.guideOverlay.classList.add('show');
                 els.guideOverlay.setAttribute('aria-hidden', 'false');
@@ -1569,20 +1625,7 @@ function openGuide() {
             }
 
             function skipIntro() {
-                                        if (els.storedList) {
-                els.storedList.addEventListener('click', (event) => {
-                    const deleteBtn = event.target.closest('.delete-btn');
-                    if (deleteBtn) return;
-                    const toggle = event.target.closest('.saved-toggle');
-                    if (!toggle) return;
-                    event.preventDefault();
-                    const index = Number(toggle.dataset.index);
-                    if (Number.isNaN(index)) return;
-                    toggleSavedItem(index);
-                });
-            }
-
-            const intro = document.getElementById('intro');
+                const intro = document.getElementById('intro');
                 if (!intro) return;
                 intro.classList.add('hidden');
                 document.body.classList.remove('intro-active');
@@ -1619,10 +1662,10 @@ function openGuide() {
             }
 
             const intro = document.getElementById('intro');
+            const skipButton = document.getElementById('skip-text');
             if (intro) {
                 document.body.classList.add('intro-active');
-                intro.addEventListener('touchstart', skipIntro);
-                intro.addEventListener('click', skipIntro);
+                if (skipButton) skipButton.addEventListener('click', skipIntro);
                 window.setTimeout(skipIntro, 50000);
             }
 
