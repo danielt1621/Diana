@@ -43,6 +43,7 @@
             gap: var(--section-gap);
             -webkit-text-size-adjust: 100%;
         }
+
         .app-shell {
             position: relative;
             width: 100%;
@@ -443,10 +444,6 @@
         .action-bar button {
             width: 100%;
         }
-        .action-bar span#stored-message {
-            text-align: center;
-            font-size: 0.85em;
-        }
         #stored-list {
             margin-top: 18px;
             display: none;
@@ -462,6 +459,8 @@
             overscroll-behavior: contain;
             flex: 1;
             min-height: 0;
+            flex-direction: column;
+            align-items: stretch;
         }
         .stored-header {
             display: flex;
@@ -496,8 +495,10 @@
             display: flex;
             flex-direction: column;
             gap: clamp(14px, 3vw, 20px);
+            width: 100%;
         }
         .saved-item {
+            width: 100%;
             border-radius: clamp(14px, 3vw, 20px);
             background: rgba(255,255,255,0.06);
             border: 1px solid rgba(255,255,255,0.14);
@@ -522,6 +523,7 @@
             font: inherit;
             cursor: pointer;
             text-align: left;
+            appearance: none;
         }
         .saved-toggle:focus-visible {
             outline: 2px solid rgba(0,255,200,0.5);
@@ -781,23 +783,27 @@
             opacity: 1;
             transition: opacity 2s ease-in-out;
             box-sizing: border-box;
-            padding: clamp(32px, 8vh, 72px) clamp(20px, 8vw, 44px);
+            padding: clamp(20px, 5vh, 56px) clamp(14px, 6vw, 32px);
             text-align: center;
-            gap: clamp(16px, 5vw, 32px);
+            gap: clamp(16px, 4vw, 28px);
             overflow-y: auto;
             overscroll-behavior: contain;
+            touch-action: pan-y;
         }
         .intro-inner {
-            width: min(620px, 92vw);
+            width: min(560px, 90vw);
+            max-height: min(90vh, 640px);
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: clamp(18px, 5vw, 32px);
+            gap: clamp(18px, 5vw, 28px);
             text-align: center;
             padding: clamp(12px, 4vw, 20px);
+            padding-bottom: clamp(18px, 5vh, 36px);
+            overflow-y: auto;
         }
 
-#intro.hidden { opacity: 0; pointer-events: none; }
+        #intro.hidden { opacity: 0; pointer-events: none; }
         #intro h1 {
             font-size: clamp(2.1rem, 4vw + 1.5rem, 3.1rem);
             perspective: 1000px;
@@ -824,12 +830,16 @@
             text-decoration: none;
             background: rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 215, 0, 0.6);
-            padding: 10px 20px;
+            padding: 10px 24px;
             border-radius: 999px;
             font-family: 'Georgia', serif;
             letter-spacing: 0.4px;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
             appearance: none;
+            position: sticky;
+            bottom: clamp(12px, 4vh, 24px);
+            align-self: center;
+            z-index: 1;
         }
         #skip-text:hover {
             transform: translateY(-1px);
@@ -874,8 +884,8 @@
 <body class="intro-active">
     <div id="intro">
         <div class="intro-inner">
-        <h1>Happy Birthday, Diana<span class="emoji-heart" role="img" aria-label="love">❤️</span></h1>
-        <p>"It all began with a simple message under the glow of the northern lights: 'I know we don't know each other, but you're living my dream...' From that unexpected spark, it blossomed into discovering a truly wonderful soul—one I care for deeply, respect immensely, and always strive to stand by, no matter where life takes us. Birthdays aren't just for you; they're a beautiful reminder for those who cherish you, celebrating the joy of being woven into your incredible story."</p>
+            <h1>Happy Birthday, Diana<span class="emoji-heart" role="img" aria-label="love">❤️</span></h1>
+            <p>"It all began with a simple message under the glow of the northern lights: 'I know we don't know each other, but you're living my dream...' From that unexpected spark, it blossomed into discovering a truly wonderful soul—one I care for deeply, respect immensely, and always strive to stand by, no matter where life takes us. Birthdays aren't just for you; they're a beautiful reminder for those who cherish you, celebrating the joy of being woven into your incredible story."</p>
             <button id="skip-text" type="button">Tap to skip</button>
         </div>
     </div>
@@ -943,10 +953,9 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
             <div class="action-bar">
                 <button id="continue-btn" class="primary" style="display:none;" onclick="continueReflection()">Continue Reflection</button>
                 <button id="store-btn" class="primary" style="display:none;" onclick="storeReflection()">Store This Reflection</button>
-                <button id="export-btn" class="primary" style="display:none;" onclick="exportConversation()">Download Conversation</button>
+                <button id="export-btn" type="button" class="primary" style="display:none;" onclick="exportConversation()">Download Conversation</button>
                 <button id="new-wish-btn" class="ghost" style="display:none;" onclick="startNewWish()">Make a New Wish</button>
-                <span id="stored-message">Wish stored!</span>
-                <button class="secondary" onclick="viewStored()">View Stored Reflections</button>
+                                <button class="secondary" onclick="viewStored()">View Stored Reflections</button>
             </div>
             <div id="stored-list"></div>
         </div>
@@ -991,7 +1000,6 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
             const els = {
                 overlay: id('overlay'),
                 toast: id('toast'),
-                storedMessage: id('stored-message'),
                 wishInput: id('wish-input'),
                 submitBtn: id('submit-btn'),
                 followupWrapper: id('followup-wrapper'),
@@ -1174,7 +1182,7 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
             }
 
             function updateActionVisibility() {
-                if (els.storedList && els.storedList.style.display === 'block') {
+                if (els.storedList && els.storedList.style.display === 'flex') {
                     if (els.actionBar) els.actionBar.style.display = 'none';
                     return;
                 }
@@ -1418,11 +1426,7 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
                 state.openSavedIndex = stored.length - 1;
                 state.manualSavedCollapse = false;
                 showToast('Wish saved to your keepsakes.', 'info');
-                if (els.storedMessage) {
-                    els.storedMessage.classList.add('visible');
-                    window.setTimeout(() => els.storedMessage.classList.remove('visible'), 2000);
-                }
-                if (els.storedList && els.storedList.style.display === 'block') {
+                if (els.storedList && els.storedList.style.display === 'flex') {
                     renderStoredList();
                 }
             }
@@ -1448,7 +1452,7 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
                 popup.focus();
                 popup.print();
             }
-                                    function renderStoredList() {
+            function renderStoredList() {
                 if (!els.storedList) return;
                 const stored = JSON.parse(localStorage.getItem('reflections') || '[]');
                 if (!stored.length) {
@@ -1511,10 +1515,10 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
                 renderStoredList();
             }
 
-                                    function viewStored() {
+            function viewStored() {
                 if (!els.storedList) return;
                 state.manualSavedCollapse = false;
-                els.storedList.style.display = 'block';
+                els.storedList.style.display = 'flex';
                 if (els.response) els.response.style.display = 'none';
                 if (els.followupWrapper) els.followupWrapper.style.display = 'none';
                 if (els.actionBar) els.actionBar.style.display = 'none';
