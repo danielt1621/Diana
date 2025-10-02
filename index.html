@@ -9,19 +9,22 @@
             box-sizing: border-box;
         }
         :root {
-            --shell-max-width: min(100%, 520px);
-            --content-radius: clamp(18px, 5vw, 28px);
-            --content-padding-block: clamp(22px, 6vw, 34px);
-            --content-padding-inline: clamp(18px, 5vw, 28px);
-            --body-padding-top: clamp(24px, 7vh, 64px);
-            --body-padding-bottom: clamp(36px, 9vh, 96px);
-            --body-padding-inline: clamp(14px, 6vw, 36px);
-            --section-gap: clamp(16px, 4vh, 28px);
+            --shell-max-width: clamp(320px, 92vw, 720px);
+            --content-radius: clamp(18px, 5vw, 30px);
+            --content-padding-block: clamp(22px, 6vw, 38px);
+            --content-padding-inline: clamp(18px, 6vw, 34px);
+            --body-padding-top: clamp(20px, 6vh, 72px);
+            --body-padding-bottom: clamp(32px, 8vh, 100px);
+            --body-padding-inline: clamp(12px, 6vw, 40px);
+            --section-gap: clamp(16px, 4vh, 32px);
+            --me-accent: rgba(255, 215, 0, 0.85);
+            --guide-accent: rgba(0, 255, 200, 0.9);
         }
         body {
             margin: 0;
             min-height: 100vh;
             min-height: 100dvh;
+            width: 100%;
             padding: var(--body-padding-top) var(--body-padding-inline) var(--body-padding-bottom);
             padding-top: calc(var(--body-padding-top) + env(safe-area-inset-top));
             padding-bottom: calc(var(--body-padding-bottom) + env(safe-area-inset-bottom));
@@ -134,7 +137,7 @@
             padding: var(--content-padding-block) var(--content-padding-inline);
             display: flex;
             flex-direction: column;
-            gap: clamp(16px, 4vw, 28px);
+            gap: clamp(18px, 4vw, 32px);
             align-items: stretch;
             text-align: center;
             box-shadow: 0 32px 60px rgba(0, 0, 0, 0.36);
@@ -243,14 +246,16 @@
         }
         #response {
             display: none;
-            background: rgba(0,0,0,0.35);
-            border: 1px solid rgba(0,255,200,0.25);
-            border-radius: 20px;
-            padding: clamp(18px, 4vw, 26px) clamp(14px, 4vw, 22px);
-            box-shadow: 0 0 24px rgba(0,255,200,0.15);
+            width: 100%;
+            background: rgba(0,0,0,0.38);
+            border: 1px solid rgba(0,255,200,0.22);
+            border-radius: clamp(18px, 4vw, 26px);
+            padding: clamp(18px, 4vw, 26px) clamp(16px, 5vw, 26px);
+            box-shadow: 0 20px 48px rgba(0,0,0,0.35);
             text-align: left;
             opacity: 0;
             transition: opacity 0.3s ease;
+            backdrop-filter: blur(10px);
         }
         #response.is-visible {
             display: block;
@@ -263,51 +268,128 @@
         #conversation-track {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            align-items: center;
             justify-content: center;
-            margin-bottom: 14px;
+            gap: clamp(10px, 4vw, 22px);
+            margin-bottom: clamp(12px, 3vw, 20px);
+            padding: clamp(6px, 2vw, 12px) clamp(10px, 4vw, 22px);
         }
         .crumb {
-            padding: 8px 14px;
-            border-radius: 999px;
-            font-size: 0.8em;
-            letter-spacing: 0.4px;
-            background: rgba(0,255,200,0.18);
-            border: 1px solid rgba(0,255,200,0.35);
-            color: #b3ffe5;
-            backdrop-filter: blur(6px);
-            box-shadow: 0 0 12px rgba(0,255,200,0.12);
-            animation: glowPulse 3.5s ease-in-out infinite;
+            position: relative;
+            width: clamp(14px, 3vw, 20px);
+            height: clamp(14px, 3vw, 20px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255,255,255,0.6);
         }
-        .crumb.wish { background: rgba(255,215,0,0.2); border-color: rgba(255,215,0,0.45); color: #ffe9a6; }
-        .crumb.note { background: rgba(255,140,0,0.18); border-color: rgba(255,140,0,0.4); color: #ffd4a1; }
-        .crumb.reflection { background: rgba(135,206,250,0.2); border-color: rgba(135,206,250,0.4); color: #d1f1ff; }
-        #conversation-body {
+        .crumb::before,
+        .crumb::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: clamp(18px, 6vw, 40px);
+            height: 2px;
+            background: currentColor;
+            opacity: 0.45;
+            transform: translateY(-50%);
+        }
+        .crumb::before { left: -55%; }
+        .crumb::after { right: -55%; }
+        .crumb.is-first::before,
+        .crumb.is-last::after { display: none; }
+        .crumb-dot {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: currentColor;
+            box-shadow: 0 0 0 rgba(0,0,0,0.2), 0 0 18px currentColor;
+        }
+        .crumb.me { color: var(--me-accent); }
+        .crumb.guide { color: var(--guide-accent); }
+        .crumb.is-pending .crumb-dot { animation: pulse 1.2s ease-in-out infinite; }
+        
+#conversation-body {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            max-height: min(340px, 48vh);
+            gap: clamp(12px, 3vw, 18px);
+            max-height: clamp(280px, 58vh, 520px);
             overflow-y: auto;
-            padding-right: clamp(4px, 1.5vw, 8px);
+            padding: clamp(10px, 3vw, 18px) clamp(6px, 3vw, 14px);
         }
         #conversation-body::-webkit-scrollbar { width: 6px; }
         #conversation-body::-webkit-scrollbar-thumb { background: rgba(0,255,200,0.44); border-radius: 6px; }
         .bubble {
-            max-width: 86%;
-            padding: 14px 16px;
-            border-radius: 16px;
-            line-height: 1.5;
-            background: rgba(0,0,0,0.4);
+            max-width: min(88%, 36rem);
+            padding: clamp(14px, 4vw, 20px);
+            border-radius: clamp(16px, 4vw, 24px);
+            line-height: 1.55;
+            background: rgba(0,0,0,0.42);
             border: 1px solid rgba(255,255,255,0.12);
-            box-shadow: 0 12px 26px rgba(0,0,0,0.24);
+            box-shadow: 0 16px 30px rgba(0,0,0,0.28);
             align-self: flex-start;
+            display: flex;
+            flex-direction: column;
+            gap: clamp(8px, 2vw, 12px);
+            text-align: left;
             animation: fadeSlide 0.45s ease;
         }
-        .bubble.wish { align-self: flex-start; background: linear-gradient(135deg, rgba(255,215,0,0.25), rgba(0,0,0,0.4)); border-color: rgba(255,215,0,0.45); }
-        .bubble.note { align-self: center; background: linear-gradient(135deg, rgba(255,140,0,0.25), rgba(0,0,0,0.35)); border-color: rgba(255,140,0,0.35); }
-        .bubble.reflection { align-self: flex-end; background: linear-gradient(135deg, rgba(0,255,200,0.22), rgba(0,0,0,0.45)); border-color: rgba(0,255,200,0.35); }
-        .bubble.thinking { align-self: center; font-style: italic; opacity: 0.8; }
-        #followup-wrapper {
+        .bubble.me {
+            margin-left: auto;
+            background: linear-gradient(135deg, rgba(255,215,0,0.22), rgba(0,0,0,0.55));
+            border-color: rgba(255,215,0,0.45);
+            box-shadow: 0 16px 34px rgba(255,215,0,0.18);
+            text-align: right;
+        }
+        .bubble.guide {
+            background: linear-gradient(135deg, rgba(0,255,200,0.18), rgba(0,0,0,0.48));
+            border-color: rgba(0,255,200,0.35);
+            box-shadow: 0 16px 34px rgba(0,255,200,0.16);
+        }
+        .bubble.thinking {
+            font-style: italic;
+            opacity: 0.82;
+        }
+        .bubble-header {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: clamp(8px, 2vw, 14px);
+        }
+        .bubble.me .bubble-header {
+            justify-content: flex-end;
+        }
+        .speaker-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 0.78em;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .speaker-badge.me {
+            background: rgba(255,215,0,0.25);
+            color: rgba(255,235,150,0.95);
+        }
+        .speaker-badge.guide {
+            background: rgba(0,255,200,0.2);
+            color: rgba(200,255,255,0.92);
+        }
+        .bubble-meta {
+            font-size: 0.8em;
+            letter-spacing: 0.4px;
+            opacity: 0.75;
+        }
+        .bubble p {
+            margin: 0;
+        }
+        .bubble.me p {
+            text-align: right;
+        }
+
+#followup-wrapper {
             display: none;
             flex-direction: column;
             gap: clamp(10px, 3vw, 16px);
@@ -345,47 +427,160 @@
             margin-top: 18px;
             display: none;
             width: 100%;
-            background: rgba(0,0,0,0.48);
-            padding: clamp(18px, 4vw, 24px);
-            border-radius: clamp(16px, 4vw, 20px);
-            box-shadow: 0 0 24px rgba(0,255,200,0.14);
+            background: rgba(4, 16, 26, 0.72);
+            padding: clamp(18px, 4vw, 26px);
+            border-radius: clamp(18px, 4vw, 24px);
+            box-shadow: 0 28px 48px rgba(0,0,0,0.32);
             text-align: left;
         }
-        #stored-list ul {
+        .stored-header {
+            display: flex;
+            justify-content: flex-start;
+            margin-bottom: clamp(14px, 3vw, 22px);
+        }
+        .back-button {
+            appearance: none;
+            border: 1px solid rgba(255,255,255,0.25);
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+        .back-button:hover {
+            border-color: rgba(0,255,200,0.45);
+            box-shadow: 0 0 14px rgba(0,255,200,0.35);
+        }
+        .stored-empty {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            align-items: flex-start;
+        }
+        .saved-list {
             list-style: none;
             padding: 0;
             margin: 0;
             display: flex;
             flex-direction: column;
-            gap: 18px;
+            gap: clamp(14px, 3vw, 20px);
         }
-        #stored-list li {
-            background: rgba(255,255,255,0.08);
-            padding: 16px;
-            border-radius: 14px;
-            box-shadow: 0 14px 26px rgba(0,0,0,0.28);
+        .saved-item {
+            border-radius: clamp(14px, 3vw, 20px);
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.14);
+            overflow: hidden;
+            backdrop-filter: blur(6px);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
-        .conversation-preview {
-            margin-top: 10px;
-            background: rgba(0,0,0,0.3);
-            border: 1px solid rgba(0,255,200,0.2);
-            border-radius: 12px;
-            padding: 12px;
-            line-height: 1.45;
+        .saved-item.is-open {
+            border-color: rgba(0,255,200,0.35);
+            box-shadow: 0 16px 32px rgba(0,0,0,0.3);
         }
-        .stored-event {
-            padding: 8px 0;
-            border-bottom: 1px dashed rgba(255,255,255,0.15);
+        .saved-toggle {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: clamp(10px, 3vw, 18px);
+            padding: clamp(14px, 4vw, 20px);
+            background: transparent;
+            border: none;
+            color: inherit;
+            font: inherit;
+            cursor: pointer;
+            text-align: left;
         }
-        .stored-event:last-child { border-bottom: none; }
-        .stored-event strong {
+        .saved-toggle:focus-visible {
+            outline: 2px solid rgba(0,255,200,0.5);
+            outline-offset: 2px;
+        }
+        .saved-title {
+            flex: 1 1 auto;
+            font-weight: 600;
+        }
+        .saved-count {
+            padding: 4px 10px;
+            font-size: 0.8em;
+            border-radius: 999px;
+            background: rgba(0,255,200,0.14);
+            color: rgba(0,255,200,0.85);
+        }
+        .saved-chevron {
+            width: 10px;
+            height: 10px;
+            border-right: 2px solid rgba(255,255,255,0.7);
+            border-bottom: 2px solid rgba(255,255,255,0.7);
+            transform: rotate(45deg);
+            transition: transform 0.2s ease;
+        }
+        .saved-item.is-open .saved-chevron {
+            transform: rotate(-135deg);
+        }
+        .saved-details {
+            padding: 0 clamp(16px, 4vw, 22px) clamp(16px, 4vw, 22px);
             display: block;
-            margin-bottom: 4px;
-            color: rgba(0,255,200,0.75);
+            border-top: 1px solid rgba(255,255,255,0.08);
         }
-        .stored-event.wish strong { color: rgba(255,215,0,0.75); }
-        .stored-event.note strong { color: rgba(255,140,0,0.75); }
-        .stored-event.reflection strong { color: rgba(135,206,250,0.85); }
+        .saved-details[hidden] {
+            display: none;
+        }
+        .saved-conversation {
+            display: flex;
+            flex-direction: column;
+            gap: clamp(12px, 3vw, 18px);
+        }
+.stored-event {
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 14px;
+            padding: clamp(14px, 4vw, 20px);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            box-shadow: 0 12px 24px rgba(0,0,0,0.2);
+        }
+        .stored-event + .stored-event {
+            margin-top: clamp(12px, 3vw, 18px);
+        }
+        .stored-event.me {
+            border-color: rgba(255,215,0,0.35);
+        }
+        .stored-event.guide {
+            border-color: rgba(0,255,200,0.35);
+        }
+        .stored-event header {
+            display: flex;
+            align-items: center;
+            gap: clamp(8px, 2vw, 14px);
+            font-size: 0.85em;
+            letter-spacing: 0.4px;
+        }
+        .conversation-label {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-weight: 600;
+        }
+        .conversation-label.me {
+            background: rgba(255,215,0,0.2);
+            color: rgba(255,235,150,0.95);
+        }
+        .conversation-label.guide {
+            background: rgba(0,255,200,0.18);
+            color: rgba(200,255,255,0.9);
+        }
+        .stored-meta {
+            font-size: 0.8em;
+            color: rgba(203, 234, 245, 0.85);
+        }
+        .stored-event p {
+            margin: 0;
+            line-height: 1.5;
+        }
         .row-actions {
             margin-top: 12px;
             display: flex;
@@ -718,7 +913,7 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
             
         <script>
         (() => {
-            const state = { currentWish: null, toastTimer: null, confirmAction: null };
+            const state = { currentWish: null, toastTimer: null, confirmAction: null, openSavedIndex: null };
 
             const id = (value) => document.getElementById(value);
             const qs = (value) => document.querySelector(value);
@@ -843,13 +1038,59 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
                     .replace(/'/g, '&#39;');
             }
 
+            function normalizeTimelineEntry(entry, index = 0) {
+                if (!entry) {
+                    return { type: 'guide', label: 'Diana', meta: '', text: '' };
+                }
+                const rawType = String(entry.type || '').toLowerCase();
+                let type;
+                if (rawType === 'me' || rawType === 'wish' || rawType === 'note') {
+                    type = 'me';
+                } else if (rawType === 'guide' || rawType === 'companion' || rawType === 'reflection') {
+                    type = 'guide';
+                } else if (rawType === 'thinking') {
+                    type = 'guide';
+                } else {
+                    type = index % 2 === 0 ? 'me' : 'guide';
+                }
+                const rawLabel = entry.label || '';
+                let label = rawLabel || (type === 'me' ? 'Me' : 'Diana');
+                if (/^note/i.test(label) || label === 'Wish') {
+                    label = 'Me';
+                }
+                if (/^reflection/i.test(label)) {
+                    label = 'Diana';
+                }
+                if (type === 'me') label = 'Me';
+                if (type === 'guide') label = 'Diana';
+                let meta = entry.meta || '';
+                if (!meta) {
+                    if (rawType === 'wish' || /wish/i.test(rawLabel) || index === 0) {
+                        meta = 'Wish';
+                    } else if (/^reflection/i.test(rawLabel) || rawType === 'reflection') {
+                        const match = rawLabel.match(/(\d+)/);
+                        meta = match ? `Reflection ${match[1]}` : 'Reflection';
+                    } else if (/^note/i.test(rawLabel)) {
+                        const match = rawLabel.match(/(\d+)/);
+                        if (match) meta = `Me ${match[1]}`;
+                    }
+                }
+                const textValue = entry.text || '';
+                return {
+                    type,
+                    label,
+                    meta: meta && meta !== label ? meta : (meta === label ? '' : meta),
+                    text: textValue
+                };
+            }
+
             function formatTimelineForDisplay(timeline) {
                 if (!Array.isArray(timeline) || !timeline.length) return '';
-                return timeline.map((entry) => {
-                    const label = escapeHtml(entry.label || '');
-                    const text = escapeHtml(entry.text || '').replace(/\r?\n/g, '<br/>');
-                    const type = entry.type || 'note';
-                    return `<div class="stored-event ${type}"><strong>${label}</strong><p>${text}</p></div>`;
+                return timeline.map((entry, index) => {
+                    const normalized = normalizeTimelineEntry(entry, index);
+                    const body = escapeHtml(normalized.text || '').replace(/\r?\n/g, '<br/>');
+                    const meta = normalized.meta ? `<span class="stored-meta">${escapeHtml(normalized.meta)}</span>` : '';
+                    return `<article class="stored-event ${normalized.type}"><header><span class="conversation-label ${normalized.type}">${escapeHtml(normalized.label)}</span>${meta}</header><p>${body}</p></article>`;
                 }).join('');
             }
 
@@ -889,10 +1130,26 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
                 if (els.submitBtn) els.submitBtn.disabled = waiting;
             }
 
-            function buildBubble(entry) {
+            function buildBubble(entry, index = 0, isNormalized = false) {
+                const normalized = isNormalized ? entry : normalizeTimelineEntry(entry, index);
                 const bubble = document.createElement('div');
-                bubble.className = `bubble ${entry.type || 'note'}`;
-                entry.text.split(/\r?\n+/).forEach((paragraph) => {
+                bubble.className = `bubble ${normalized.type}`;
+                if (normalized.label || normalized.meta) {
+                    const header = document.createElement('div');
+                    header.className = 'bubble-header';
+                    const badge = document.createElement('span');
+                    badge.className = `speaker-badge ${normalized.type}`;
+                    badge.textContent = normalized.label || (normalized.type === 'me' ? 'Me' : 'Diana');
+                    header.appendChild(badge);
+                    if (normalized.meta && normalized.meta !== normalized.label) {
+                        const meta = document.createElement('span');
+                        meta.className = 'bubble-meta';
+                        meta.textContent = normalized.meta;
+                        header.appendChild(meta);
+                    }
+                    bubble.appendChild(header);
+                }
+                normalized.text.split(/\r?\n+/).forEach((paragraph) => {
                     const trimmed = paragraph.trim();
                     if (!trimmed) return;
                     const p = document.createElement('p');
@@ -915,9 +1172,13 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
                         els.response.style.display = 'block';
                         els.response.classList.remove('is-visible');
                         els.response.classList.add('is-pending');
-                        const thinking = document.createElement('div');
-                        thinking.className = 'bubble thinking';
-                        thinking.textContent = 'Reflecting on your wish...';
+                        const thinking = buildBubble({
+                            type: 'guide',
+                            label: 'Diana',
+                            meta: 'Listening',
+                            text: 'Reflecting on your wish...'
+                        }, 0, true);
+                        thinking.classList.add('thinking');
                         els.conversation.appendChild(thinking);
                     } else {
                         els.response.classList.remove('is-visible', 'is-pending');
@@ -927,18 +1188,34 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
                     return;
                 }
 
-                current.timeline.forEach((entry, index) => {
+                const normalizedTimeline = current.timeline.map((entry, index) => normalizeTimelineEntry(entry, index));
+
+                normalizedTimeline.forEach((normalized, index) => {
                     const crumb = document.createElement('div');
-                    crumb.className = `crumb ${entry.type || 'note'}`;
-                    crumb.textContent = entry.label || `Step ${index + 1}`;
+                    crumb.className = `crumb ${normalized.type}`;
+                    if (index === 0) crumb.classList.add('is-first');
+                    if (index === normalizedTimeline.length - 1) crumb.classList.add('is-last');
+                    if (current.waiting && index === normalizedTimeline.length - 1) {
+                        crumb.classList.add('is-pending');
+                    }
+                    const descriptor = normalized.meta ? `${normalized.label}: ${normalized.meta}` : normalized.label;
+                    crumb.setAttribute('aria-label', descriptor);
+                    const dot = document.createElement('span');
+                    dot.className = 'crumb-dot';
+                    crumb.appendChild(dot);
                     els.timeline.appendChild(crumb);
-                    els.conversation.appendChild(buildBubble(entry));
+
+                    els.conversation.appendChild(buildBubble(normalized, index, true));
                 });
 
                 if (current.waiting) {
-                    const thinking = document.createElement('div');
-                    thinking.className = 'bubble thinking';
-                    thinking.textContent = 'Reflecting on your words...';
+                    const thinking = buildBubble({
+                        type: 'guide',
+                        label: 'Diana',
+                        meta: 'Writing',
+                        text: 'Reflecting on your words...'
+                    }, normalizedTimeline.length, true);
+                    thinking.classList.add('thinking');
                     els.conversation.appendChild(thinking);
                 }
 
@@ -959,11 +1236,15 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
             }
 
             function createTimelineSnapshot(timeline) {
-                return Array.isArray(timeline) ? timeline.map((entry) => ({
-                    type: entry.type,
-                    label: entry.label,
-                    text: entry.text
-                })) : [];
+                return Array.isArray(timeline) ? timeline.map((entry, index) => {
+                    const normalized = normalizeTimelineEntry(entry, index);
+                    return {
+                        type: normalized.type,
+                        label: normalized.label,
+                        meta: normalized.meta,
+                        text: normalized.text
+                    };
+                }) : [];
             }
 
             async function processWish() {
@@ -983,7 +1264,7 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
                 state.currentWish = {
                     wish: rawWish,
                     history: [],
-                    timeline: [{ type: 'wish', label: 'Wish', text: rawWish }],
+                    timeline: [{ type: 'me', label: 'Me', meta: 'Wish', text: rawWish }],
                     waiting: true
                 };
                 renderTimeline({ animate: false });
@@ -993,7 +1274,7 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
                     const reflection = await callReflectionAPI(prompt);
                     if (!reflection) throw new Error('Empty reflection');
                     state.currentWish.history.push(reflection);
-                    state.currentWish.timeline.push({ type: 'reflection', label: 'Reflection 1', text: reflection });
+                    state.currentWish.timeline.push({ type: 'guide', label: 'Diana', meta: `Reflection ${state.currentWish.history.length}`, text: reflection });
                     state.currentWish.waiting = false;
                     renderTimeline({ animate: true });
                 } catch (error) {
@@ -1022,8 +1303,7 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
                 if (els.continueBtn) els.continueBtn.disabled = true;
                 if (els.storeBtn) els.storeBtn.style.display = 'none';
 
-                const noteIndex = state.currentWish.timeline.filter((entry) => entry.type === 'note').length + 1;
-                state.currentWish.timeline.push({ type: 'note', label: `Note ${noteIndex}`, text: note });
+                state.currentWish.timeline.push({ type: 'me', label: 'Me', meta: '', text: note });
                 state.currentWish.waiting = true;
                 renderTimeline({ animate: false });
 
@@ -1032,7 +1312,7 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
                     const reflection = await callReflectionAPI(prompt);
                     if (!reflection) throw new Error('Empty reflection');
                     state.currentWish.history.push(reflection);
-                    state.currentWish.timeline.push({ type: 'reflection', label: `Reflection ${state.currentWish.history.length}`, text: reflection });
+                    state.currentWish.timeline.push({ type: 'guide', label: 'Diana', meta: `Reflection ${state.currentWish.history.length}`, text: reflection });
                     state.currentWish.waiting = false;
                     if (els.followupInput) els.followupInput.value = '';
                     renderTimeline({ animate: true });
@@ -1056,15 +1336,25 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
                     reflection: state.currentWish.history.join(''),
                     timeline: createTimelineSnapshot(state.currentWish.timeline)
                 };
-                const existing = JSON.parse(localStorage.getItem('reflections') || '[]');
-                existing.push(entry);
-                localStorage.setItem('reflections', JSON.stringify(existing));
+                const stored = JSON.parse(localStorage.getItem('reflections') || '[]');
+                const normalizedWish = (entry.wish || '').trim().toLowerCase();
+                const duplicateIndex = stored.findIndex((item) => (item && item.wish ? item.wish.trim().toLowerCase() : '') === normalizedWish);
+                if (duplicateIndex !== -1) {
+                    showToast('That wish is already stored. Open it from your keepsakes.', 'warn');
+                    return;
+                }
+                stored.push(entry);
+                localStorage.setItem('reflections', JSON.stringify(stored));
+                state.openSavedIndex = stored.length - 1;
+                showToast('Wish saved to your keepsakes.', 'info');
                 if (els.storedMessage) {
                     els.storedMessage.classList.add('visible');
                     window.setTimeout(() => els.storedMessage.classList.remove('visible'), 2000);
                 }
+                if (els.storedList && els.storedList.style.display === 'block') {
+                    renderStoredList();
+                }
             }
-
             function exportConversation() {
                 if (!state.currentWish || !state.currentWish.timeline || !state.currentWish.timeline.length) {
                     showToast('There is no conversation to export yet.', 'warn');
@@ -1076,39 +1366,66 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
                     return;
                 }
                 const title = 'Wish Reflection';
-                const items = state.currentWish.timeline.map((entry) => {
-                    const label = escapeHtml(entry.label || '');
-                    const text = escapeHtml(entry.text || '').replace(/\r?\n/g, '<br/>');
-                    return `<section class="export-entry ${entry.type}"><h3>${label}</h3><p>${text}</p></section>`;
+                const items = state.currentWish.timeline.map((entry, index) => {
+                    const normalized = normalizeTimelineEntry(entry, index);
+                    const headingMeta = normalized.meta && normalized.meta !== normalized.label ? ` <small>${escapeHtml(normalized.meta)}</small>` : '';
+                    const text = escapeHtml(normalized.text || '').replace(/\r?\n/g, '<br/>');
+                    return `<section class="export-entry ${normalized.type}"><h3>${escapeHtml(normalized.label)}${headingMeta}</h3><p>${text}</p></section>`;
                 }).join('');
-                popup.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>${title}</title><style>body{font-family:Georgia,serif;padding:40px;background:#0b1c2a;color:#effff7;}h1{text-align:center;margin-bottom:30px;}section.export-entry{margin-bottom:24px;padding:18px;border-radius:12px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);}section.export-entry.wish{background:rgba(255,215,0,0.12);}section.export-entry.note{background:rgba(255,140,0,0.12);}section.export-entry.reflection{background:rgba(0,255,200,0.12);}h3{margin:0 0 10px;}p{margin:0;line-height:1.6;}</style></head><body><h1>${escapeHtml(state.currentWish.wish)}</h1>${items}</body></html>`);
+                popup.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>${title}</title><style>body{font-family:Georgia,serif;padding:40px;background:#0b1c2a;color:#effff7;}h1{text-align:center;margin-bottom:30px;}section.export-entry{margin-bottom:24px;padding:18px;border-radius:12px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);}section.export-entry.me{background:rgba(255,215,0,0.12);border-color:rgba(255,215,0,0.35);}section.export-entry.guide{background:rgba(0,255,200,0.12);border-color:rgba(0,255,200,0.35);}section.export-entry h3{display:flex;justify-content:space-between;align-items:center;margin:0 0 10px;gap:12px;}section.export-entry h3 small{font-weight:normal;font-size:0.85em;color:#cbeaf5;}p{margin:0;line-height:1.6;}</style></head><body><h1>${escapeHtml(state.currentWish.wish)}</h1>${items}</body></html>`);
                 popup.document.close();
                 popup.focus();
                 popup.print();
             }
-
-            function renderStoredList() {
+                                    function renderStoredList() {
                 if (!els.storedList) return;
                 const stored = JSON.parse(localStorage.getItem('reflections') || '[]');
                 if (!stored.length) {
-                    els.storedList.innerHTML = '<button onclick="backToMain()" style="margin-bottom: 20px;">Back</button><p>No stored reflections yet.</p>';
+                    els.storedList.innerHTML = '<div class="stored-empty"><button class="back-button" onclick="backToMain()">Back</button><p>No stored reflections yet.</p></div>';
                     return;
                 }
+                if (state.openSavedIndex !== null && (state.openSavedIndex < 0 || state.openSavedIndex >= stored.length)) {
+                    state.openSavedIndex = null;
+                }
                 const items = stored.map((entry, index) => {
-                    const wish = escapeHtml(entry && entry.wish ? entry.wish : '');
-                    const preview = entry && entry.timeline && entry.timeline.length
-                        ? formatTimelineForDisplay(entry.timeline)
-                        : formatTimelineForDisplay([
-                            { type: 'wish', label: 'Wish', text: entry.wish },
-                            { type: 'reflection', label: 'Reflection', text: entry.reflection }
-                        ]);
-                    return `<li><strong>Wish:</strong> ${wish}<div class="conversation-preview">${preview}</div><div class="row-actions"><button class="delete-btn" onclick="deleteReflection(${index})">Delete</button></div></li>`;
+                    const wishText = entry && entry.wish ? entry.wish : `Wish ${index + 1}`;
+                    const wish = escapeHtml(wishText);
+                    const timeline = entry && Array.isArray(entry.timeline) && entry.timeline.length
+                        ? entry.timeline
+                        : [
+                            { type: 'me', label: 'Me', meta: 'Wish', text: entry && entry.wish ? entry.wish : '' },
+                            { type: 'guide', label: 'Diana', meta: 'Reflection', text: entry && entry.reflection ? entry.reflection : '' }
+                        ];
+                    const count = Array.isArray(timeline) ? timeline.length : 0;
+                    const isOpen = state.openSavedIndex === index;
+                    const details = formatTimelineForDisplay(timeline);
+                    return `<li class="saved-item ${isOpen ? 'is-open' : ''}">` +
+                        `<button class="saved-toggle" type="button" data-index="${index}" aria-expanded="${isOpen}">` +
+                        `<span class="saved-title">${wish}</span>` +
+                        `<span class="saved-count">${count}</span>` +
+                        '<span class="saved-chevron" aria-hidden="true"></span>' +
+                        '</button>' +
+                        `<div class="saved-details"${isOpen ? '' : ' hidden'} id="saved-details-${index}">` +
+                        `<div class="saved-conversation">${details}</div>` +
+                        '<div class="row-actions">' +
+                        `<button class="delete-btn" onclick="deleteReflection(${index})">Delete</button>` +
+                        '</div>' +
+                        '</div>' +
+                        '</li>';
                 }).join('');
-                els.storedList.innerHTML = `<button onclick="backToMain()" style="margin-bottom: 20px;">Back</button><ul>${items}</ul>`;
+                els.storedList.innerHTML = `<div class="stored-header"><button class="back-button" onclick="backToMain()">Back</button></div><ul class="saved-list">${items}</ul>`;
             }
 
-            function viewStored() {
+                        function toggleSavedItem(index) {
+                const stored = JSON.parse(localStorage.getItem('reflections') || '[]');
+                if (!stored.length || index < 0 || index >= stored.length) return;
+                state.openSavedIndex = state.openSavedIndex === index ? null : index;
+                renderStoredList();
+            }
+
+                                    function viewStored() {
                 if (!els.storedList) return;
+                state.openSavedIndex = null;
                 els.storedList.style.display = 'block';
                 if (els.response) els.response.style.display = 'none';
                 if (els.followupWrapper) els.followupWrapper.style.display = 'none';
@@ -1117,18 +1434,25 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
                 renderStoredList();
             }
 
-            function deleteReflection(index) {
+                        function deleteReflection(index) {
                 showConfirm('Delete this reflection? The insight will be lost to the night.', () => {
                     const stored = JSON.parse(localStorage.getItem('reflections') || '[]');
                     if (index < 0 || index >= stored.length) return;
                     stored.splice(index, 1);
                     localStorage.setItem('reflections', JSON.stringify(stored));
+                    if (state.openSavedIndex === index) {
+                        state.openSavedIndex = null;
+                    } else if (state.openSavedIndex !== null && state.openSavedIndex > index) {
+                        state.openSavedIndex -= 1;
+                    }
                     renderStoredList();
+                    showToast('Reflection removed.', 'info');
                 });
             }
 
-            function startNewWish() {
+                        function startNewWish() {
                 state.currentWish = null;
+                state.openSavedIndex = null;
                 if (els.wishInput) {
                     els.wishInput.value = '';
                     els.wishInput.focus();
@@ -1138,13 +1462,30 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
                 updateActionVisibility();
             }
 
-            function backToMain() {
-                if (els.storedList) els.storedList.style.display = 'none';
+                        function backToMain() {
+                state.openSavedIndex = null;
+                if (els.storedList) {
+                    els.storedList.style.display = 'none';
+                    els.storedList.innerHTML = '';
+                }
                 if (els.actionBar) els.actionBar.style.display = 'flex';
+                if (els.initialControls) {
+                    const hasHistory = !!(state.currentWish && state.currentWish.history && state.currentWish.history.length);
+                    els.initialControls.style.display = hasHistory ? 'none' : 'flex';
+                }
+                if (els.followupWrapper) {
+                    const hasHistory = !!(state.currentWish && state.currentWish.history && state.currentWish.history.length);
+                    els.followupWrapper.style.display = hasHistory ? 'flex' : 'none';
+                }
+                if (els.response) {
+                    const hasTimeline = !!(state.currentWish && state.currentWish.timeline && state.currentWish.timeline.length);
+                    els.response.style.display = hasTimeline ? 'block' : 'none';
+                }
                 renderTimeline({ animate: false });
+                updateActionVisibility();
             }
 
-            function openGuide() {
+function openGuide() {
                 if (!els.guideOverlay) return;
                 els.guideOverlay.classList.add('show');
                 els.guideOverlay.setAttribute('aria-hidden', 'false');
@@ -1157,7 +1498,20 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
             }
 
             function skipIntro() {
-                const intro = document.getElementById('intro');
+                                        if (els.storedList) {
+                els.storedList.addEventListener('click', (event) => {
+                    const deleteBtn = event.target.closest('.delete-btn');
+                    if (deleteBtn) return;
+                    const toggle = event.target.closest('.saved-toggle');
+                    if (!toggle) return;
+                    event.preventDefault();
+                    const index = Number(toggle.dataset.index);
+                    if (Number.isNaN(index)) return;
+                    toggleSavedItem(index);
+                });
+            }
+
+            const intro = document.getElementById('intro');
                 if (!intro) return;
                 intro.classList.add('hidden');
                 document.body.classList.remove('intro-active');
@@ -1179,6 +1533,19 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
                 if (event.target === els.guideOverlay) closeGuide();
             });
             if (els.guideClose) els.guideClose.addEventListener('click', closeGuide);
+
+            if (els.storedList) {
+                els.storedList.addEventListener('click', (event) => {
+                    const deleteBtn = event.target.closest('.delete-btn');
+                    if (deleteBtn) return;
+                    const toggle = event.target.closest('.saved-toggle');
+                    if (!toggle) return;
+                    event.preventDefault();
+                    const index = Number(toggle.dataset.index);
+                    if (Number.isNaN(index)) return;
+                    toggleSavedItem(index);
+                });
+            }
 
             const intro = document.getElementById('intro');
             if (intro) {
