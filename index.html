@@ -423,6 +423,10 @@
             box-shadow: 0 18px 38px rgba(0, 0, 0, 0.35);
             animation: fadeSlide 0.4s ease;
         }
+        .bubble.incoming {
+            animation: bubbleReveal 0.45s ease;
+            box-shadow: 0 20px 44px rgba(52, 241, 197, 0.22);
+        }
         .bubble.user {
             align-self: flex-end;
             background: linear-gradient(135deg, rgba(255, 214, 109, 0.22), rgba(0, 0, 0, 0.5));
@@ -446,22 +450,29 @@
             word-break: break-word;
         }
         .bubble.thinking {
-            align-self: center;
-            background: rgba(244, 254, 255, 0.08);
-            border-color: rgba(244, 254, 255, 0.18);
-            text-align: center;
+            align-self: flex-start;
+            background: rgba(244, 254, 255, 0.1);
+            border-color: rgba(244, 254, 255, 0.22);
             color: var(--muted);
         }
-        .bubble.thinking::after {
-            content: "";
-            width: 22px;
-            height: 22px;
-            margin: 0 auto;
-            border-radius: 50%;
-            border: 2px solid rgba(244, 254, 255, 0.2);
-            border-top-color: var(--accent);
-            animation: spin 1s linear infinite;
+        .bubble.thinking p {
+            margin-bottom: 6px;
         }
+        .bubble.thinking .typing-dots {
+            display: inline-flex;
+            gap: 6px;
+            align-items: center;
+            margin-top: 2px;
+        }
+        .typing-dots span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(244, 254, 255, 0.78);
+            animation: dotBounce 1.2s ease-in-out infinite;
+        }
+        .typing-dots span:nth-child(2) { animation-delay: 0.15s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.3s; }
         .chat-footer {
             padding: clamp(16px, 4vw, 24px);
             background: rgba(0, 0, 0, 0.28);
@@ -609,8 +620,8 @@
             align-items: center;
             justify-content: center;
             padding: clamp(24px, 8vw, 42px);
-            background: rgba(2, 6, 15, 0.7);
-            backdrop-filter: blur(14px);
+            background: rgba(2, 6, 15, 0.55);
+            backdrop-filter: blur(10px);
             z-index: 90;
             transition: opacity 0.6s ease;
         }
@@ -619,7 +630,7 @@
             pointer-events: none;
         }
         .intro-card {
-            background: rgba(6, 24, 38, 0.88);
+            background: rgba(6, 24, 38, 0.78);
             border-radius: var(--radius-lg);
             padding: clamp(28px, 8vw, 40px);
             border: 1px solid rgba(244, 254, 255, 0.16);
@@ -628,7 +639,8 @@
             display: flex;
             flex-direction: column;
             gap: var(--gap-md);
-            max-width: 520px;
+            max-width: 680px;
+            width: min(92vw, 680px);
             max-height: min(92vh, 620px);
             overflow-y: auto;
         }
@@ -685,6 +697,10 @@
             0% { opacity: 0; transform: translateY(16px); }
             100% { opacity: 1; transform: translateY(0); }
         }
+        @keyframes dotBounce {
+            0%, 100% { transform: translateY(0); opacity: 0.4; }
+            50% { transform: translateY(-6px); opacity: 1; }
+        }
         @keyframes twinkle {
             0%, 100% { opacity: 0.45; transform: scale(0.9); }
             50% { opacity: 1; transform: scale(1.1); }
@@ -697,7 +713,7 @@
             from { opacity: 0; transform: translateY(16px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        @keyframes floatUp {
+        @keyframes bubbleReveal {\r\n            0% { opacity: 0; transform: translateY(14px) scale(0.97); }\r\n            60% { opacity: 0.9; transform: translateY(-2px) scale(1.01); }\r\n            100% { opacity: 1; transform: translateY(0) scale(1); }\r\n        }\r\n        @keyframes floatUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
@@ -910,6 +926,7 @@
                     createdAt: Number.isFinite(message.createdAt) ? message.createdAt : Date.now()
                 })) : [],
                 history: entry.history ? entry.history.slice() : deriveHistory(entry.messages),
+                justReceived: null,
                 createdAt: Number.isFinite(entry.createdAt) ? entry.createdAt : Date.now(),
                 updatedAt: Number.isFinite(entry.updatedAt) ? entry.updatedAt : Date.now(),
                 waiting: false,
@@ -1041,6 +1058,7 @@
                     wish: '',
                     messages: [],
                     history: [],
+                    justReceived: null,
                     createdAt: Date.now(),
                     updatedAt: Date.now(),
                     waiting: false,
@@ -1063,6 +1081,7 @@
                     return;
                 }
 
+                const highlightId = state.current ? state.current.justReceived : null;
                 const fragment = document.createDocumentFragment();
                 state.current.messages.forEach((message) => {
                     const bubble = document.createElement('article');
@@ -1080,6 +1099,10 @@
                         bubble.appendChild(paragraph);
                     });
 
+                    if (highlightId && message.id === highlightId && message.author === 'guide') {
+                        bubble.classList.add('incoming');
+                    }
+
                     fragment.appendChild(bubble);
                 });
 
@@ -1091,30 +1114,42 @@
                     const nudge = document.createElement('article');
                     nudge.className = 'bubble thinking';
                     const text = document.createElement('p');
-                    text.textContent = 'Start with anything on your heart—a hope, a plan, or even a whisper of a dream.';
+                    text.textContent = 'Start with anything on your heart - a hope, a plan, or even a whisper of a dream.';
                     nudge.appendChild(text);
                     fragment.appendChild(nudge);
                 }
 
                 els.chatThread.appendChild(fragment);
+                if (state.current && state.current.justReceived) {
+                    state.current.justReceived = null;
+                }
                 if (scrollToEnd) scrollThread();
                 updateChatHeader();
                 updateChatControls();
             }
-
             function createThinkingBubble() {
                 const bubble = document.createElement('article');
                 bubble.className = 'bubble thinking';
                 const text = document.createElement('p');
                 text.textContent = 'Reflection is gathering her thoughts...';
                 bubble.appendChild(text);
+                const dots = document.createElement('div');
+                dots.className = 'typing-dots';
+                for (let index = 0; index < 3; index += 1) {
+                    dots.appendChild(document.createElement('span'));
+                }
+                bubble.appendChild(dots);
                 return bubble;
             }
-
             function scrollThread() {
                 if (!els.chatThread) return;
                 requestAnimationFrame(() => {
-                    els.chatThread.scrollTop = els.chatThread.scrollHeight;
+                    const target = els.chatThread.scrollHeight;
+                    if (typeof els.chatThread.scrollTo === "function") {
+                        els.chatThread.scrollTo({ top: target, behavior: "smooth" });
+                    } else {
+                        els.chatThread.scrollTop = target;
+                    }
                 });
             }
 
@@ -1187,6 +1222,7 @@
 
             async function requestReflection(note, isInitial) {
                 state.current.waiting = true;
+                state.current.justReceived = null;
                 updateChatControls();
                 renderChat(true);
 
@@ -1205,7 +1241,9 @@
                         text: trimmed,
                         createdAt: Date.now()
                     };
+                    await new Promise((resolve) => setTimeout(resolve, 260));
                     state.current.messages.push(guideMessage);
+                    state.current.justReceived = guideMessage.id;
                     state.current.history.push(trimmed);
                     state.current.updatedAt = Date.now();
                     state.current.waiting = false;
@@ -1214,6 +1252,7 @@
                 } catch (error) {
                     console.error(error);
                     state.current.waiting = false;
+                    if (state.current) state.current.justReceived = null;
                     showToast('The connection flickered. Please try again in a moment.', 'error', 3600);
                     renderChat(false);
                 } finally {
@@ -1659,6 +1698,22 @@
     </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
