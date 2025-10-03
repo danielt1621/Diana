@@ -2,898 +2,704 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Birthday Reflection</title>
-            <style>
+    <style>
+        :root {
+            --bg: #02060f;
+            --bg-glow: radial-gradient(circle at 20% 20%, rgba(52, 241, 197, 0.18), transparent 55%), radial-gradient(circle at 80% 10%, rgba(255, 214, 109, 0.2), transparent 60%);
+            --panel: rgba(6, 20, 34, 0.82);
+            --panel-strong: rgba(8, 24, 40, 0.92);
+            --panel-soft: rgba(8, 24, 40, 0.7);
+            --text: #f4feff;
+            --muted: rgba(244, 254, 255, 0.75);
+            --accent: #34f1c5;
+            --accent-soft: rgba(52, 241, 197, 0.35);
+            --accent-strong: rgba(52, 241, 197, 0.75);
+            --gold: #ffd66d;
+            --danger: #ff6b6b;
+            --radius-lg: clamp(18px, 6vw, 32px);
+            --radius-md: clamp(12px, 5vw, 22px);
+            --radius-sm: clamp(8px, 4vw, 16px);
+            --gap-lg: clamp(22px, 6vw, 34px);
+            --gap-md: clamp(16px, 5vw, 24px);
+            --gap-sm: clamp(10px, 4vw, 18px);
+            --shadow-soft: 0 30px 60px rgba(0, 0, 0, 0.45);
+            color-scheme: dark;
+        }
         *, *::before, *::after {
             box-sizing: border-box;
         }
-        :root {
-            --shell-max-width: clamp(320px, 94vw, 760px);
-            --content-radius: clamp(18px, 5vw, 32px);
-            --content-padding-block: clamp(24px, 7vw, 40px);
-            --content-padding-inline: clamp(14px, 4.6vw, 32px);
-            --body-padding-top: clamp(20px, 6vh, 72px);
-            --body-padding-bottom: clamp(32px, 8vh, 100px);
-            --body-padding-inline: clamp(10px, 5vw, 38px);
-            --section-gap: clamp(18px, 4vh, 34px);
-            --me-accent: rgba(255, 215, 0, 0.85);
-            --guide-accent: rgba(0, 255, 200, 0.9);
+        html {
+            height: 100%;
         }
         body {
             margin: 0;
-            min-height: 100vh;
             min-height: 100dvh;
-            height: 100vh;
-            height: 100dvh;
-            width: 100%;
-            padding: var(--body-padding-top) var(--body-padding-inline) var(--body-padding-bottom);
-            padding-top: calc(var(--body-padding-top) + env(safe-area-inset-top));
-            padding-bottom: calc(var(--body-padding-bottom) + env(safe-area-inset-bottom));
-            font-family: 'Georgia', serif;
-            color: #fff;
-            background: #000;
+            height: 100%;
+            background: var(--bg);
+            background-image: var(--bg-glow);
+            color: var(--text);
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
             display: flex;
             flex-direction: column;
-            justify-content: flex-start;
             align-items: center;
-            text-align: center;
+            justify-content: flex-start;
+            padding: calc(18px + env(safe-area-inset-top, 0px)) clamp(12px, 5vw, 36px) calc(26px + env(safe-area-inset-bottom, 0px));
             overflow: hidden;
-            touch-action: manipulation;
-            gap: var(--section-gap);
+            position: relative;
             -webkit-text-size-adjust: 100%;
         }
-
-        .app-shell {
-            position: relative;
-            width: 100%;
-            max-width: var(--shell-max-width);
-            margin: 0 auto;
-            padding-inline: clamp(6px, 2vw, 18px);
-            display: flex;
-            flex-direction: column;
-            align-items: stretch;
-            gap: var(--section-gap);
-            flex: 1;
-            min-height: 0;
-        }
-        body.intro-active .app-shell,
-        body.intro-active #aurora {
-            filter: blur(6px);
-            pointer-events: none;
-        }
-        #overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        #error-message {
-            background: #222;
-            padding: 20px;
-            border-radius: 10px;
-            max-width: 80%;
-        }
-        #aurora {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            animation: fadeIn 2s ease-in forwards;
+        body.chat-open {
             overflow: hidden;
-            z-index: 1;
         }
-        #aurora-video {
+        #sky {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+        }
+        #sky::after {
+            content: "";
             position: absolute;
-            top: 50%;
-            left: 50%;
-            min-width: 100%;
-            min-height: 100%;
-            width: auto;
-            height: auto;
-            transform: translate(-50%, -50%);
+            inset: 0;
+            background: linear-gradient(180deg, rgba(2, 6, 15, 0.35), rgba(2, 6, 15, 0.85));
+        }
+        #sky video {
+            width: 100%;
+            height: 100%;
             object-fit: cover;
-            filter: brightness(0.8);
+            filter: brightness(0.82) saturation(1.05);
         }
         .star {
             position: absolute;
             background: #fff;
             border-radius: 50%;
-            animation: twinkle 2s infinite alternate;
-            opacity: 0.8;
+            opacity: 0.7;
+            animation: twinkle 4s ease-in-out infinite;
         }
-        @keyframes twinkle {
-            0% { opacity: 0.5; transform: scale(0.8); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-        .star:nth-child(1) { top: 10%; left: 20%; width: 2px; height: 2px; animation-delay: 0s; }
-        .star:nth-child(2) { top: 15%; left: 50%; width: 3px; height: 3px; animation-delay: 0.5s; }
-        .star:nth-child(3) { top: 20%; left: 80%; width: 1px; height: 1px; animation-delay: 1s; }
-        .star:nth-child(4) { top: 25%; left: 30%; width: 2px; height: 2px; animation-delay: 1.5s; }
-        .star:nth-child(5) { top: 30%; left: 60%; width: 1px; height: 1px; animation-delay: 0.2s; }
-        .star:nth-child(6) { top: 35%; left: 10%; width: 3px; height: 3px; animation-delay: 0.8s; }
-        .star:nth-child(7) { top: 40%; left: 70%; width: 2px; height: 2px; animation-delay: 1.2s; }
-        .star:nth-child(8) { top: 45%; left: 40%; width: 1px; height: 1px; animation-delay: 0.4s; }
-        .star:nth-child(9) { top: 50%; left: 90%; width: 2px; height: 2px; animation-delay: 1s; }
-        .star:nth-child(10) { top: 55%; left: 25%; width: 3px; height: 3px; animation-delay: 0.6s; }
-        .star:nth-child(11) { top: 60%; left: 55%; width: 1px; height: 1px; animation-delay: 1.4s; }
-        .star:nth-child(12) { top: 65%; left: 15%; width: 2px; height: 2px; animation-delay: 0.3s; }
-        .star:nth-child(13) { top: 70%; left: 85%; width: 3px; height: 3px; animation-delay: 0.9s; }
-        .star:nth-child(14) { top: 75%; left: 35%; width: 1px; height: 1px; animation-delay: 1.3s; }
-        .star:nth-child(15) { top: 80%; left: 65%; width: 2px; height: 2px; animation-delay: 0.7s; }
-        .star:nth-child(16) { top: 85%; left: 5%; width: 3px; height: 3px; animation-delay: 1.1s; }
-        .star:nth-child(17) { top: 90%; left: 45%; width: 1px; height: 1px; animation-delay: 0.1s; }
-        .star:nth-child(18) { top: 95%; left: 75%; width: 2px; height: 2px; animation-delay: 1.6s; }
-        .star:nth-child(19) { top: 5%; left: 95%; width: 3px; height: 3px; animation-delay: 0s; }
-        .star:nth-child(20) { top: 8%; left: 5%; width: 1px; height: 1px; animation-delay: 1.7s; }
-        #content {
+        .star:nth-child(1) { top: 8%; left: 18%; width: 2px; height: 2px; animation-delay: 0.2s; }
+        .star:nth-child(2) { top: 15%; left: 68%; width: 3px; height: 3px; animation-delay: 1s; }
+        .star:nth-child(3) { top: 28%; left: 42%; width: 2px; height: 2px; animation-delay: 1.8s; }
+        .star:nth-child(4) { top: 42%; left: 82%; width: 1px; height: 1px; animation-delay: 0.6s; }
+        .star:nth-child(5) { top: 65%; left: 55%; width: 2px; height: 2px; animation-delay: 1.4s; }
+        .star:nth-child(6) { top: 72%; left: 18%; width: 3px; height: 3px; animation-delay: 2.1s; }
+        #app {
             position: relative;
-            z-index: 10;
-            width: 100%;
-            background: rgba(8, 26, 38, 0.82);
-            border-radius: var(--content-radius);
-            padding: calc(var(--content-padding-block) + clamp(12px, 4vw, 24px)) var(--content-padding-inline) clamp(26px, 6vw, 36px);
+            z-index: 2;
+            width: min(100%, 780px);
+            flex: 1 1 auto;
             display: flex;
             flex-direction: column;
-            gap: clamp(20px, 4.5vw, 34px);
-            align-items: stretch;
-            text-align: center;
-            box-shadow: 0 32px 60px rgba(0, 0, 0, 0.36);
-            backdrop-filter: blur(14px);
-            opacity: 0;
-            animation: fadeIn 1.8s ease 1s forwards;
-            flex: 1;
-            min-height: 0;
+            gap: var(--gap-lg);
+            padding: clamp(20px, 6vw, 36px);
+            border-radius: var(--radius-lg);
+            background: var(--panel);
+            backdrop-filter: blur(18px);
+            box-shadow: var(--shadow-soft);
+            max-height: calc(100dvh - calc(env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px)) - clamp(46px, 12vw, 120px));
             overflow: hidden;
         }
-        h1 {
-            margin: 8px 0 6px;
-            font-size: clamp(1.9rem, 1.8vw + 1.4rem, 2.4rem);
-            animation: glow 4s infinite;
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: var(--gap-sm);
         }
-        p {
+        .brand {
+            text-align: left;
+        }
+        .brand h1 {
             margin: 0;
-            font-size: 1.05em;
-            font-style: italic;
-            line-height: 1.4;
+            font-size: clamp(1.8rem, 1.3rem + 1.4vw, 2.4rem);
+            letter-spacing: 0.04em;
+            display: flex;
+            align-items: center;
+            gap: 0.4em;
         }
-        #content > p {
-            margin: 0 auto;
-            max-width: 42ch;
-            font-size: clamp(1rem, 0.6vw + 1rem, 1.12rem);
+        .brand p {
+            margin: 6px 0 0;
+            color: var(--muted);
+            font-size: clamp(1rem, 0.4rem + 1vw, 1.18rem);
+            max-width: 36ch;
         }
-        button, input, textarea {
-            font-family: 'Georgia', serif;
-            border: none;
-            border-radius: 12px;
-            padding: clamp(12px, 3.5vw, 16px) clamp(16px, 4.5vw, 22px);
-            font-size: clamp(1rem, 0.3vw + 0.98rem, 1.08rem);
-            transition: transform 0.25s ease, box-shadow 0.25s ease;
-        }
-        button {
-            cursor: pointer;
-            box-shadow: 0 0 12px rgba(0,255,200,0.25);
-        }
-        button:hover:not(:disabled) {
-            transform: translateY(-1px);
-            box-shadow: 0 0 18px rgba(0,255,200,0.45);
-        }
-        button:focus-visible {
-            outline: 2px solid rgba(0,255,200,0.6);
-            outline-offset: 2px;
-        }
-        button.primary {
-            background: linear-gradient(135deg, rgba(0,255,200,0.78), rgba(0,180,255,0.74));
-            color: #021619;
-            font-weight: 600;
-        }
-        button.primary:disabled {
-            opacity: 0.55;
-            cursor: not-allowed;
-            box-shadow: none;
-            transform: none;
-        }
-        button.secondary {
-            background: rgba(255,255,255,0.12);
-            color: #fff;
-            border: 1px solid rgba(255,255,255,0.25);
-        }
-        button.ghost {
-            background: transparent;
-            border: 1px solid rgba(255,215,0,0.5);
-            color: #ffe679;
-            box-shadow: 0 0 14px rgba(255,215,0,0.2);
-        }
-        button.icon {
-            padding: 0;
-            width: 38px;
-            height: 38px;
+        button.icon-button {
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
+            border: 1px solid rgba(244, 254, 255, 0.25);
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text);
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            background: rgba(0,0,0,0.35);
-            border: 1px solid rgba(0,255,200,0.45);
-            color: #b8fff0;
-            box-shadow: 0 0 14px rgba(0,255,200,0.25);
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
         }
-        #guide-button {
+        button.icon-button:hover,
+        button.icon-button:focus-visible {
+            transform: translateY(-1px);
+            border-color: var(--accent);
+            box-shadow: 0 0 14px rgba(52, 241, 197, 0.3);
+        }
+        .sr-only {
             position: absolute;
-            top: clamp(12px, 4vw, 22px);
-            right: clamp(12px, 4vw, 22px);
-            z-index: 2;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
         }
-        input, textarea {
-            width: 100%;
-            background: rgba(0,0,0,0.4);
-            border: 1px solid rgba(0,255,200,0.2);
-            color: #fff;
-            box-shadow: inset 0 0 12px rgba(0,255,200,0.08);
-        }
-        input:focus, textarea:focus {
-            outline: none;
-            border-color: rgba(0,255,200,0.65);
-            box-shadow: inset 0 0 18px rgba(0,255,200,0.18);
-        }
-        #initial-controls {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            align-items: stretch;
-        }
-        .primary-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        #response {
+        .screen {
             display: none;
-            width: 100%;
-            background: rgba(0,0,0,0.38);
-            border: 1px solid rgba(0,255,200,0.22);
-            border-radius: clamp(18px, 4vw, 26px);
-            padding: clamp(18px, 4vw, 26px) clamp(16px, 5vw, 26px);
-            box-shadow: 0 20px 48px rgba(0,0,0,0.35);
-            text-align: left;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            backdrop-filter: blur(10px);
             flex: 1;
-            min-height: 0;
-            flex-direction: column;
-            gap: clamp(16px, 3vw, 24px);
+            overflow: hidden;
         }
-        #response.is-visible,
-        #response.is-pending {
+        .screen.is-active {
             display: flex;
+            flex-direction: column;
+            gap: var(--gap-md);
+            overflow-y: auto;
+            padding-right: 4px;
         }
-        #response.is-visible {
-            opacity: 1;
+        .screen::-webkit-scrollbar {
+            width: 6px;
         }
-        #response.is-pending {
-            opacity: 0.65;
+        .screen::-webkit-scrollbar-thumb {
+            background: rgba(244, 254, 255, 0.25);
+            border-radius: 999px;
         }
-        #conversation-track {
+        #screen-menu {
+            align-items: center;
+            text-align: center;
+            justify-content: center;
+            padding-bottom: clamp(12px, 4vw, 20px);
+        }
+        #screen-menu h2 {
+            font-size: clamp(1.6rem, 1.1rem + 1.6vw, 2.1rem);
+            margin: 0;
+        }
+        #screen-menu p {
+            margin: 8px 0 24px;
+            color: var(--muted);
+            max-width: 38ch;
+        }
+        .menu-actions {
+            display: flex;
+            flex-direction: column;
+            gap: var(--gap-sm);
+            width: min(420px, 100%);
+        }
+        .menu-actions button {
+            width: 100%;
+        }
+        button.primary,
+        button.secondary,
+        button.ghost {
+            appearance: none;
+            border: none;
+            border-radius: 999px;
+            padding: 14px 20px;
+            font-size: clamp(1rem, 0.6rem + 1vw, 1.1rem);
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+        }
+        button.primary {
+            background: linear-gradient(135deg, rgba(52, 241, 197, 0.95), rgba(30, 170, 192, 0.88));
+            color: #001216;
+            box-shadow: 0 12px 30px rgba(52, 241, 197, 0.35);
+        }
+        button.primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        button.primary:not(:disabled):hover,
+        button.primary:not(:disabled):focus-visible {
+            transform: translateY(-1px);
+            box-shadow: 0 16px 38px rgba(52, 241, 197, 0.45);
+        }
+        button.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text);
+            border: 1px solid rgba(244, 254, 255, 0.24);
+        }
+        button.secondary:hover,
+        button.secondary:focus-visible {
+            border-color: var(--accent);
+            box-shadow: 0 0 16px rgba(52, 241, 197, 0.28);
+        }
+        button.ghost {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid rgba(244, 254, 255, 0.2);
+        }
+        button.ghost:hover,
+        button.ghost:focus-visible {
+            border-color: var(--gold);
+            color: var(--gold);
+            box-shadow: 0 0 16px rgba(255, 214, 109, 0.28);
+        }
+        #screen-saved {
+            gap: var(--gap-md);
+        }
+        .saved-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--gap-sm);
+        }
+        .saved-header h2 {
+            margin: 0;
+            font-size: clamp(1.4rem, 1rem + 1vw, 1.9rem);
+        }
+        .saved-header p {
+            margin: 4px 0 0;
+            color: var(--muted);
+        }
+        #saved-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--gap-sm);
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        .saved-empty {
+            display: flex;
+            flex-direction: column;
+            gap: var(--gap-sm);
+            text-align: left;
+            background: var(--panel-strong);
+            border-radius: var(--radius-md);
+            padding: clamp(18px, 4vw, 24px);
+            border: 1px solid rgba(244, 254, 255, 0.12);
+        }
+        .saved-card {
+            background: var(--panel-strong);
+            border-radius: var(--radius-md);
+            padding: clamp(18px, 4vw, 26px);
+            border: 1px solid rgba(244, 254, 255, 0.14);
+            display: flex;
+            flex-direction: column;
+            gap: var(--gap-sm);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .saved-card.is-current {
+            border-color: var(--accent);
+            box-shadow: 0 12px 28px rgba(52, 241, 197, 0.25);
+        }
+        .saved-card header {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .saved-card h3 {
+            margin: 0;
+            font-size: clamp(1.1rem, 0.8rem + 0.9vw, 1.4rem);
+        }
+        .saved-card p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+        .saved-meta {
             display: flex;
             flex-wrap: wrap;
-            align-items: center;
-            justify-content: center;
-            gap: clamp(10px, 4vw, 22px);
-            margin-bottom: clamp(12px, 3vw, 20px);
-            padding: clamp(6px, 2vw, 12px) clamp(10px, 4vw, 22px);
+            gap: 12px;
+            color: rgba(244, 254, 255, 0.65);
+            font-size: 0.85rem;
         }
-        .crumb {
-            position: relative;
-            width: clamp(14px, 3vw, 20px);
-            height: clamp(14px, 3vw, 20px);
+        .saved-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .saved-actions button {
+            flex: 1 1 45%;
+        }
+        .saved-actions button.delete {
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.85), rgba(214, 60, 94, 0.9));
+            color: #1b0202;
+            border: none;
+        }
+        .saved-actions button.delete:hover,
+        .saved-actions button.delete:focus-visible {
+            box-shadow: 0 12px 26px rgba(255, 107, 107, 0.4);
+        }
+        #screen-chat {
+            position: fixed;
+            inset: 0;
+            padding: calc(18px + env(safe-area-inset-top, 0px)) clamp(12px, 3vw, 24px) calc(20px + env(safe-area-inset-bottom, 0px));
+            display: none;
+            flex-direction: column;
+            background: rgba(2, 6, 15, 0.82);
+            backdrop-filter: blur(20px);
+            z-index: 50;
+        }
+        #screen-chat.is-active {
+            display: flex;
+        }
+        .chat-shell {
+            flex: 1;
+            max-width: min(760px, 100%);
+            margin: 0 auto;
+            background: var(--panel-strong);
+            border-radius: clamp(18px, 5vw, 30px);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid rgba(244, 254, 255, 0.1);
+            box-shadow: var(--shadow-soft);
+        }
+        .chat-header {
             display: flex;
             align-items: center;
-            justify-content: center;
-            color: rgba(255,255,255,0.6);
+            gap: var(--gap-sm);
+            padding: clamp(14px, 4vw, 22px);
+            border-bottom: 1px solid rgba(244, 254, 255, 0.12);
         }
-        .crumb::before,
-        .crumb::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            width: clamp(18px, 6vw, 40px);
-            height: 2px;
-            background: currentColor;
-            opacity: 0.45;
-            transform: translateY(-50%);
+        .chat-header button {
+            flex-shrink: 0;
         }
-        .crumb::before { left: -55%; }
-        .crumb::after { right: -55%; }
-        .crumb.is-first::before,
-        .crumb.is-last::after { display: none; }
-        .crumb-dot {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: currentColor;
-            box-shadow: 0 0 0 rgba(0,0,0,0.2), 0 0 18px currentColor;
+        .chat-titles {
+            flex: 1;
+            min-width: 0;
         }
-        .crumb.me { color: var(--me-accent); }
-        .crumb.guide { color: var(--guide-accent); }
-        .crumb.is-pending .crumb-dot { animation: pulse 1.2s ease-in-out infinite; }
-        
-        #conversation-body {
+        .chat-titles h2 {
+            margin: 0;
+            font-size: clamp(1.2rem, 0.9rem + 1vw, 1.6rem);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .chat-titles p {
+            margin: 4px 0 0;
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+        .chat-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        #chat-thread {
+            flex: 1;
+            overflow-y: auto;
+            padding: clamp(18px, 4vw, 26px);
             display: flex;
             flex-direction: column;
             gap: clamp(12px, 3vw, 18px);
-            flex: 1;
-            min-height: 0;
-            justify-content: flex-end;
-            overflow-y: auto;
-            scrollbar-gutter: stable both-edges;
-            -webkit-overflow-scrolling: touch;
-            overscroll-behavior: contain;
-            padding: clamp(6px, 2vw, 12px) clamp(6px, 3vw, 14px) clamp(12px, 3vw, 18px);
+            scroll-padding-bottom: 80px;
         }
-        #conversation-body::-webkit-scrollbar { width: 6px; }
-        #conversation-body::-webkit-scrollbar-thumb { background: rgba(0,255,200,0.44); border-radius: 6px; }
+        #chat-thread::-webkit-scrollbar {
+            width: 6px;
+        }
+        #chat-thread::-webkit-scrollbar-thumb {
+            background: rgba(244, 254, 255, 0.18);
+            border-radius: 999px;
+        }
         .bubble {
-            max-width: min(96%, 40rem);
-            padding: clamp(14px, 4vw, 20px);
-            border-radius: clamp(16px, 4vw, 24px);
-            line-height: 1.55;
-            background: rgba(0,0,0,0.42);
-            border: 1px solid rgba(255,255,255,0.12);
-            box-shadow: 0 16px 30px rgba(0,0,0,0.28);
-            align-self: flex-start;
+            max-width: min(88%, 480px);
+            padding: clamp(12px, 3.5vw, 18px);
+            border-radius: clamp(16px, 5vw, 26px);
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(244, 254, 255, 0.12);
+            color: var(--text);
+            position: relative;
             display: flex;
             flex-direction: column;
-            gap: clamp(8px, 2vw, 12px);
-            text-align: left;
-            animation: fadeSlide 0.45s ease;
+            gap: 8px;
+            box-shadow: 0 18px 38px rgba(0, 0, 0, 0.35);
+            animation: fadeSlide 0.4s ease;
         }
-        .bubble.me {
+        .bubble.user {
             align-self: flex-end;
-            margin-left: auto;
-            background: linear-gradient(135deg, rgba(255,215,0,0.22), rgba(0,0,0,0.55));
-            border-color: rgba(255,215,0,0.45);
-            box-shadow: 0 16px 34px rgba(255,215,0,0.18);
+            background: linear-gradient(135deg, rgba(255, 214, 109, 0.22), rgba(0, 0, 0, 0.5));
+            border-color: rgba(255, 214, 109, 0.4);
             text-align: right;
         }
         .bubble.guide {
             align-self: flex-start;
-            background: linear-gradient(135deg, rgba(0,255,200,0.18), rgba(0,0,0,0.48));
-            border-color: rgba(0,255,200,0.35);
-            box-shadow: 0 16px 34px rgba(0,255,200,0.16);
+            background: linear-gradient(135deg, rgba(52, 241, 197, 0.16), rgba(0, 0, 0, 0.44));
+            border-color: rgba(52, 241, 197, 0.32);
         }
-        .bubble.thinking {
-            font-style: italic;
-            opacity: 0.82;
-            align-self: center;
-        }
-        .bubble-header {
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            gap: clamp(8px, 2vw, 14px);
-        }
-        .bubble.me .bubble-header {
-            justify-content: flex-end;
-        }
-        .speaker-badge {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 4px 10px;
-            border-radius: 999px;
-            font-size: 0.78em;
-            letter-spacing: 0.5px;
+        .bubble .meta {
+            font-size: 0.78rem;
+            letter-spacing: 0.04em;
             text-transform: uppercase;
-        }
-        .speaker-badge.me {
-            background: rgba(255,215,0,0.25);
-            color: rgba(255,235,150,0.95);
-        }
-        .speaker-badge.guide {
-            background: rgba(0,255,200,0.2);
-            color: rgba(200,255,255,0.92);
-        }
-        .bubble-meta {
-            font-size: 0.8em;
-            letter-spacing: 0.4px;
-            opacity: 0.75;
+            color: rgba(244, 254, 255, 0.6);
         }
         .bubble p {
             margin: 0;
+            line-height: 1.55;
+            word-break: break-word;
         }
-        .bubble.me p {
-            text-align: right;
+        .bubble.thinking {
+            align-self: center;
+            background: rgba(244, 254, 255, 0.08);
+            border-color: rgba(244, 254, 255, 0.18);
+            text-align: center;
+            color: var(--muted);
         }
-
-#followup-wrapper {
-            display: none;
-            flex-direction: column;
-            gap: clamp(10px, 3vw, 16px);
-            background: rgba(0,0,0,0.35);
-            border: 1px solid rgba(0,255,200,0.2);
-            border-radius: 16px;
-            padding: clamp(16px, 4vw, 22px);
-            box-shadow: 0 18px 32px rgba(0,0,0,0.25);
-            backdrop-filter: blur(6px);
-            text-align: left;
+        .bubble.thinking::after {
+            content: "";
+            width: 22px;
+            height: 22px;
+            margin: 0 auto;
+            border-radius: 50%;
+            border: 2px solid rgba(244, 254, 255, 0.2);
+            border-top-color: var(--accent);
+            animation: spin 1s linear infinite;
         }
-        #followup-wrapper label {
-            font-size: 0.92em;
-            letter-spacing: 0.5px;
-            color: rgba(255,255,255,0.85);
-        }
-        #followup-input {
-            min-height: 90px;
-            resize: vertical;
-        }
-        .action-bar {
+        .chat-footer {
+            padding: clamp(16px, 4vw, 24px);
+            background: rgba(0, 0, 0, 0.28);
+            border-top: 1px solid rgba(244, 254, 255, 0.1);
             display: flex;
             flex-direction: column;
-            gap: clamp(10px, 3vw, 14px);
-            margin-top: auto;
-            padding-top: clamp(12px, 3vw, 18px);
+            gap: var(--gap-sm);
         }
-        .action-bar button {
+        #chat-input {
             width: 100%;
+            min-height: 56px;
+            max-height: 180px;
+            resize: none;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(244, 254, 255, 0.18);
+            background: rgba(0, 0, 0, 0.38);
+            color: var(--text);
+            font-size: 1.05rem;
+            padding: 14px 16px;
+            line-height: 1.4;
         }
-        #stored-list {
-            margin-top: 18px;
-            display: none;
-            width: 100%;
-            background: rgba(4, 16, 26, 0.72);
-            padding: clamp(18px, 4vw, 26px);
-            border-radius: clamp(18px, 4vw, 24px);
-            box-shadow: 0 28px 48px rgba(0,0,0,0.32);
-            text-align: left;
-            max-height: 100%;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-            overscroll-behavior: contain;
-            flex: 1;
-            min-height: 0;
-            flex-direction: column;
-            align-items: stretch;
-        }
-        .stored-header {
-            display: flex;
-            justify-content: flex-start;
-            margin-bottom: clamp(14px, 3vw, 22px);
-        }
-        .back-button {
-            appearance: none;
-            border: 1px solid rgba(255,255,255,0.25);
-            background: rgba(255,255,255,0.1);
-            color: #fff;
-            padding: 8px 16px;
-            border-radius: 999px;
-            font-size: 0.9em;
-            cursor: pointer;
-            transition: box-shadow 0.2s ease, border-color 0.2s ease;
-        }
-        .back-button:hover {
-            border-color: rgba(0,255,200,0.45);
-            box-shadow: 0 0 14px rgba(0,255,200,0.35);
-        }
-        .stored-empty {
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-            align-items: flex-start;
-        }
-        .saved-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            gap: clamp(14px, 3vw, 20px);
-            width: 100%;
-        }
-        .saved-item {
-            width: 100%;
-            border-radius: clamp(14px, 3vw, 20px);
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,255,255,0.14);
-            overflow: hidden;
-            backdrop-filter: blur(6px);
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
-        }
-        .saved-item.is-open {
-            border-color: rgba(0,255,200,0.35);
-            box-shadow: 0 16px 32px rgba(0,0,0,0.3);
-        }
-        .saved-toggle {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: clamp(10px, 3vw, 18px);
-            padding: clamp(14px, 4vw, 20px);
-            background: transparent;
-            border: none;
-            color: inherit;
-            font: inherit;
-            cursor: pointer;
-            text-align: left;
-            appearance: none;
-        }
-        .saved-toggle:focus-visible {
-            outline: 2px solid rgba(0,255,200,0.5);
+        #chat-input:focus-visible {
+            outline: 2px solid var(--accent-soft);
             outline-offset: 2px;
         }
-        .saved-title {
-            flex: 1 1 auto;
-            font-weight: 600;
+        #chat-input::placeholder {
+            color: rgba(244, 254, 255, 0.45);
         }
-        .saved-count {
-            padding: 4px 10px;
-            min-width: 2.5em;
-            text-align: center;
-            font-size: 0.8em;
-            font-weight: 600;
-            border-radius: 999px;
-            background: rgba(0,255,200,0.14);
-            color: rgba(0,255,200,0.85);
-        }
-        .saved-chevron {
-            width: 10px;
-            height: 10px;
-            border-right: 2px solid rgba(255,255,255,0.7);
-            border-bottom: 2px solid rgba(255,255,255,0.7);
-            transform: rotate(45deg);
-            transition: transform 0.2s ease;
-        }
-        .saved-item.is-open .saved-chevron {
-            transform: rotate(-135deg);
-        }
-        .saved-details {
-            padding: 0 clamp(16px, 4vw, 22px) clamp(16px, 4vw, 22px);
-            display: block;
-            border-top: 1px solid rgba(255,255,255,0.08);
-        }
-        .saved-details[hidden] {
-            display: none;
-        }
-        .saved-conversation {
+        .chat-actions {
             display: flex;
-            flex-direction: column;
-            gap: clamp(12px, 3vw, 18px);
-        }
-.stored-event {
-            background: rgba(255,255,255,0.07);
-            border: 1px solid rgba(255,255,255,0.12);
-            border-radius: 14px;
-            padding: clamp(14px, 4vw, 20px);
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            box-shadow: 0 12px 24px rgba(0,0,0,0.2);
-        }
-        .stored-event + .stored-event {
-            margin-top: clamp(12px, 3vw, 18px);
-        }
-        .stored-event.me {
-            border-color: rgba(255,215,0,0.35);
-        }
-        .stored-event.guide {
-            border-color: rgba(0,255,200,0.35);
-        }
-        .stored-event header {
-            display: flex;
-            align-items: center;
-            gap: clamp(8px, 2vw, 14px);
-            font-size: 0.85em;
-            letter-spacing: 0.4px;
-        }
-        .conversation-label {
-            display: inline-flex;
-            align-items: center;
-            padding: 4px 10px;
-            border-radius: 999px;
-            font-weight: 600;
-        }
-        .conversation-label.me {
-            background: rgba(255,215,0,0.2);
-            color: rgba(255,235,150,0.95);
-        }
-        .conversation-label.guide {
-            background: rgba(0,255,200,0.18);
-            color: rgba(200,255,255,0.9);
-        }
-        .stored-meta {
-            font-size: 0.8em;
-            color: rgba(203, 234, 245, 0.85);
-        }
-        .stored-event p {
-            margin: 0;
-            line-height: 1.5;
-        }
-        .row-actions {
-            margin-top: 12px;
-            display: flex;
-            justify-content: flex-end;
             gap: 10px;
-            flex-wrap: wrap;
+        }
+        .chat-actions button {
+            flex: 1;
+        }
+        .chat-actions button:first-child {
+            flex: 0 0 120px;
         }
         .toast {
             position: fixed;
-            top: 20px;
+            bottom: calc(16px + env(safe-area-inset-bottom, 0px));
             left: 50%;
-            transform: translate(-50%, -20px);
+            transform: translateX(-50%) translateY(120%);
+            background: rgba(8, 24, 40, 0.9);
+            color: var(--text);
+            border-radius: 999px;
             padding: 12px 20px;
-            background: rgba(10,20,30,0.85);
-            border: 1px solid rgba(0,255,200,0.4);
-            border-radius: 12px;
-            color: #ffd700;
-            box-shadow: 0 0 18px rgba(0,255,200,0.25);
-            opacity: 0;
-            transition: opacity 0.4s ease, transform 0.4s ease;
-            pointer-events: none;
-            z-index: 40;
-            max-width: 90%;
+            font-size: 0.95rem;
+            z-index: 80;
+            transition: transform 0.35s ease;
+            box-shadow: 0 16px 34px rgba(0, 0, 0, 0.35);
         }
-        .toast.show { opacity: 1; transform: translate(-50%, 0); }
-        .toast.warn { border-color: rgba(255,215,0,0.7); color: #ffe9a6; }
-        .toast.error { border-color: rgba(231,76,60,0.7); color: #ffd3c8; }
-        .modal-overlay {
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+        .toast.warn {
+            color: var(--gold);
+        }
+        .toast.error {
+            color: var(--danger);
+        }
+        .overlay-sheet {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
             display: none;
-            justify-content: center;
             align-items: center;
-            background: rgba(0, 0, 0, 0.75);
-            z-index: 45;
+            justify-content: center;
+            background: rgba(2, 6, 15, 0.78);
+            backdrop-filter: blur(18px);
+            z-index: 60;
+            padding: clamp(20px, 6vw, 32px);
         }
-        .modal-overlay.show { display: flex; }
-        .modal-card {
-            position: relative;
-            background: rgba(5, 15, 25, 0.92);
-            border: 1px solid rgba(0,255,200,0.35);
-            border-radius: 18px;
-            padding: clamp(22px, 5vw, 28px);
-            width: min(92vw, 360px);
-            text-align: center;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.45);
-        }
-        .modal-actions {
+        .overlay-sheet.is-active {
             display: flex;
-            justify-content: center;
+        }
+        .info-card {
+            background: var(--panel-strong);
+            border-radius: var(--radius-lg);
+            padding: clamp(24px, 5vw, 36px);
+            width: min(92vw, 520px);
+            border: 1px solid rgba(244, 254, 255, 0.18);
+            box-shadow: var(--shadow-soft);
+            text-align: left;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: var(--gap-sm);
+            animation: floatUp 0.45s ease;
+        }
+        .info-card h2 {
+            margin: 0;
+            text-align: center;
+            font-size: clamp(1.4rem, 1rem + 1vw, 1.9rem);
+        }
+        .info-card ol {
+            margin: 0;
+            padding-left: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .info-card .footnote {
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+        .info-card button.icon-button {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+        }
+        .confirm-card {
+            background: var(--panel-strong);
+            border-radius: var(--radius-md);
+            padding: clamp(22px, 5vw, 30px);
+            width: min(90vw, 420px);
+            border: 1px solid rgba(244, 254, 255, 0.16);
+            box-shadow: var(--shadow-soft);
+            display: flex;
+            flex-direction: column;
+            gap: var(--gap-sm);
+            animation: floatUp 0.35s ease;
+        }
+        .confirm-card p {
+            margin: 0;
+            color: var(--text);
+            text-align: center;
+        }
+        .confirm-actions {
+            display: flex;
             gap: 12px;
-            margin-top: 18px;
-            flex-wrap: wrap;
+            justify-content: center;
         }
-        .modal-actions button { min-width: 120px; }
-        .modal-actions .confirm-btn { background: linear-gradient(#e74c3c, #c0392b); color: #fff; }
-        .modal-actions .cancel-btn {
-            background: rgba(255,255,255,0.15);
-            color: #fff;
-            border: 1px solid rgba(255,255,255,0.35);
+        .confirm-actions button {
+            flex: 1;
         }
-        .info-overlay {
+        .confirm-actions .danger {
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.92), rgba(214, 60, 94, 0.95));
+            color: #1b0202;
+        }
+        #intro {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.75);
-            display: none;
+            inset: 0;
+            display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 45;
+            padding: clamp(24px, 8vw, 42px);
+            background: rgba(2, 6, 15, 0.88);
+            backdrop-filter: blur(14px);
+            z-index: 90;
+            transition: opacity 0.6s ease;
         }
-        .info-overlay.show { display: flex; }
-        .info-card {
-            position: relative;
-            width: min(92vw, 440px);
-            background: rgba(5, 25, 35, 0.92);
-            border: 1px solid rgba(0,255,200,0.35);
-            border-radius: 18px;
-            padding: clamp(24px, 5vw, 32px);
-            text-align: left;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.45);
-            animation: floatUp 0.5s ease;
+        #intro.hidden {
+            opacity: 0;
+            pointer-events: none;
         }
-        .info-card h2 { margin-top: 0; text-align: center; letter-spacing: 0.8px; }
-        .info-card ol { padding-left: 18px; margin: 0 0 12px; }
-        .info-card li { margin-bottom: 8px; }
-        .info-card .footnote { font-size: 0.85em; color: rgba(255,255,255,0.75); text-align: center; }
-        button.icon.close {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            width: 32px;
-            height: 32px;
-            background: rgba(0,0,0,0.35);
-            color: #fff;
-            border: 1px solid rgba(255,255,255,0.3);
-            box-shadow: none;
+        .intro-card {
+            background: rgba(6, 24, 38, 0.92);
+            border-radius: var(--radius-lg);
+            padding: clamp(28px, 8vw, 40px);
+            border: 1px solid rgba(244, 254, 255, 0.16);
+            box-shadow: var(--shadow-soft);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: var(--gap-md);
+            max-width: 520px;
         }
-        .emoji-heart, .emoji-star {
-            display: inline-block;
-            margin-left: 0.2em;
+        .intro-card h1 {
+            margin: 0;
+            font-family: 'Georgia', serif;
+            font-size: clamp(2rem, 1.4rem + 2vw, 2.8rem);
+            line-height: 1.2;
         }
-        .emoji-heart {
-            animation: heartbeat 1.6s ease-in-out infinite;
-            transform-origin: center;
-            filter: drop-shadow(0 0 6px rgba(255, 64, 129, 0.45));
+        .intro-card p {
+            margin: 0;
+            font-size: clamp(1.05rem, 0.9rem + 0.9vw, 1.3rem);
+            color: var(--muted);
+            text-wrap: pretty;
         }
-        .emoji-star {
-            animation: shimmer 2.4s ease-in-out infinite;
-            filter: drop-shadow(0 0 6px rgba(255, 255, 150, 0.55));
+        #intro-skip {
+            align-self: center;
+            padding: 12px 28px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 214, 109, 0.55);
+            background: rgba(255, 214, 109, 0.15);
+            color: var(--gold);
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: sticky;
+            bottom: 0;
         }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes glow {
-            0% { text-shadow: 0 0 5px #ffd700; }
-            50% { text-shadow: 0 0 15px #ffd700; }
-            100% { text-shadow: 0 0 5px #ffd700; }
+        #intro-skip:hover,
+        #intro-skip:focus-visible {
+            transform: translateY(-1px);
+            box-shadow: 0 0 16px rgba(255, 214, 109, 0.4);
         }
-        @keyframes pulse {
-            0% { opacity: 0.5; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.05); }
-            100% { opacity: 0.5; transform: scale(1); }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.45; transform: scale(0.9); }
+            50% { opacity: 1; transform: scale(1.1); }
         }
-        @keyframes heartbeat {
-            0%, 100% { transform: scale(1); }
-            25% { transform: scale(1.18); }
-            40% { transform: scale(0.94); }
-            60% { transform: scale(1.12); }
-            80% { transform: scale(1.02); }
-        }
-        @keyframes shimmer {
-            0%, 100% { transform: rotate(0deg) scale(1); opacity: 0.85; }
-            30% { transform: rotate(6deg) scale(1.12); opacity: 1; }
-            60% { transform: rotate(-6deg) scale(0.97); opacity: 0.92; }
-        }
-        @keyframes glowPulse {
-            0%, 100% { box-shadow: 0 0 10px rgba(0,255,200,0.35); }
-            50% { box-shadow: 0 0 18px rgba(0,255,200,0.65); }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
         @keyframes fadeSlide {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(16px); }
             to { opacity: 1; transform: translateY(0); }
         }
         @keyframes floatUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        #intro {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            min-height: 100vh;
-            min-height: 100dvh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background: rgba(0,0,0,0.8);
-            z-index: 20;
-            opacity: 1;
-            transition: opacity 2s ease-in-out;
-            box-sizing: border-box;
-            padding: clamp(20px, 5vh, 56px) clamp(14px, 6vw, 32px);
-            text-align: center;
-            gap: clamp(16px, 4vw, 28px);
-            overflow-y: auto;
-            overscroll-behavior: contain;
-            touch-action: pan-y;
+        @media (min-width: 680px) {
+            body {
+                padding-left: clamp(24px, 6vw, 72px);
+                padding-right: clamp(24px, 6vw, 72px);
+            }
+            #app {
+                max-height: min(calc(100dvh - calc(env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px)) - 64px), 760px);
+            }
+            .chat-actions button:first-child {
+                flex: 0 0 160px;
+            }
+            .saved-actions button {
+                flex: 0 0 auto;
+            }
         }
-        .intro-inner {
-            width: min(560px, 90vw);
-            max-height: min(90vh, 640px);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: clamp(18px, 5vw, 28px);
-            text-align: center;
-            padding: clamp(12px, 4vw, 20px);
-            padding-bottom: clamp(18px, 5vh, 36px);
-            overflow-y: auto;
-        }
-
-        #intro.hidden { opacity: 0; pointer-events: none; }
-        #intro h1 {
-            font-size: clamp(2.1rem, 4vw + 1.5rem, 3.1rem);
-            perspective: 1000px;
-            animation: flipIn 2s ease-in-out;
-            text-shadow: 0 0 10px rgba(0,0,0,0.5), 0 0 20px rgba(0,255,200,0.3);
-            max-width: min(28ch, 100%);
-            margin: 0;
-            text-wrap: balance;
-        }
-        #intro p {
-            max-width: min(40ch, 100%);
-            font-size: clamp(1.05rem, 2vw + 1rem, 1.35rem);
-            opacity: 0;
-            animation: fadeInText 2s ease-in 2s forwards;
-            text-shadow: 0 0 10px rgba(0,0,0,0.5), 0 0 20px rgba(0,255,200,0.3);
-            margin: 0 auto;
-            text-wrap: pretty;
-        }
-        #skip-text {
-            font-size: clamp(0.95rem, 0.4vw + 0.85rem, 1rem);
-            color: #ffd700;
-            cursor: pointer;
-            margin-top: clamp(16px, 4vw, 28px);
-            text-decoration: none;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 215, 0, 0.6);
-            padding: 10px 24px;
-            border-radius: 999px;
-            font-family: 'Georgia', serif;
-            letter-spacing: 0.4px;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            appearance: none;
-            position: sticky;
-            bottom: clamp(12px, 4vh, 24px);
-            align-self: center;
-            z-index: 1;
-        }
-        #skip-text:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 0 18px rgba(255,215,0,0.35);
-        }
-        #skip-text:focus-visible {
-            outline: 2px solid rgba(255,215,0,0.8);
-            outline-offset: 3px;
-        }
-        @keyframes flipIn {
-            0% { transform: rotateY(-180deg); opacity: 0; }
-            100% { transform: rotateY(0); opacity: 1; }
-        }
-        @keyframes fadeInText {
-            0% { opacity: 0; transform: translateY(20px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-        button.delete-btn {
-            background: linear-gradient(#e74c3c, #c0392b);
-            color: #fff;
-        }
-        button.delete-btn:hover {
-            box-shadow: 0 0 15px rgba(231,76,60,0.8);
-        }
-        @media (min-width: 420px) {
-            .primary-actions { flex-direction: row; }
-            .primary-actions button { flex: 1; }
-        }
-        @media (max-width: 520px) {
-            .bubble { max-width: 100%; }
-            .row-actions { justify-content: center; }
-        }
-        @media (max-width: 360px) {
-            #content { padding: calc(var(--content-padding-block) + clamp(6px, 4vw, 16px)) clamp(12px, 5vw, 20px) clamp(22px, 6vw, 32px); }
-            button.icon { width: 34px; height: 34px; }
-        }
-        @media (min-width: 768px) {
-            :root { --shell-max-width: min(100%, 560px); }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
         }
     </style>
 </head>
-<body class="intro-active">
-    <div id="intro">
-        <div class="intro-inner">
-            <h1>Happy Birthday, Diana<span class="emoji-heart" role="img" aria-label="love">❤️</span></h1>
-            <p>"It all began with a simple message under the glow of the northern lights: 'I know we don't know each other, but you're living my dream...' From that unexpected spark, it blossomed into discovering a truly wonderful soul—one I care for deeply, respect immensely, and always strive to stand by, no matter where life takes us. Birthdays aren't just for you; they're a beautiful reminder for those who cherish you, celebrating the joy of being woven into your incredible story."</p>
-            <button id="skip-text" type="button">Tap to skip</button>
-        </div>
-    </div>
-    <div id="aurora">
-        <video id="aurora-video" autoplay loop muted playsinline>
-            <source src="
-
-https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Key-Pair-Id=APKAIEYUVEN4EVB2OKEQ&Signature=RzrhuSTXuLFZayv06DuP552QdiNtFPyMoLeShUnaZxurAjIbRwajLYZAZVN9WCGsjeJq9zHTmQiSUQngLyJyPJBHgyEtLFG1jgIP5Kjhz2-NSzlKBE6xwNLkDAM892rLpCmsLCj~ZpaoGYUysK3gYRc5oPSpWk66du6Vnm9WR1iq97SuTQxFjtP5HYRa6Bl3InLfzJkgTxbsdowtB1SgmuoIvtVBVA5EcWrP855YaWRTjd5tO~ech~v3ybQCODXfu8Xz9Z6bORAYmSXusEoKL~PgrSUE2Ha7IWU-DGXaTKYlxtY7m9oFcHBNTltKkIhUCGQ2iSJSkrYJM8zjGJ28KQ__" type="video/mp4">
+<body class="is-intro">
+    <div id="sky" aria-hidden="true">
+        <video autoplay loop muted playsinline>
+            <source src="https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Key-Pair-Id=APKAIEYUVEN4EVB2OKEQ&Signature=RzrhuSTXuLFZayv06DuP552QdiNtFPyMoLeShUnaZxurAjIbRwajLYZAZVN9WCGsjeJq9zHTmQiSUQngLyJyPJBHgyEtLFG1jgIP5Kjhz2-NSzlKBE6xwNLkDAM892rLpCmsLCj~ZpaoGYUysK3gYRc5oPSpWk66du6Vnm9WR1iq97SuTQxFjtP5HYRa6Bl3InLfzJkgTxbsdowtB1SgmuoIvtVBVA5EcWrP855YaWRTjd5tO~ech~v3ybQCODXfu8Xz9Z6bORAYmSXusEoKL~PgrSUE2Ha7IWU-DGXaTKYlxtY7m9oFcHBNTltKkIhUCGQ2iSJSkrYJM8zjGJ28KQ__" type="video/mp4">
         </video>
         <div class="star"></div>
         <div class="star"></div>
@@ -901,182 +707,465 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
         <div class="star"></div>
         <div class="star"></div>
         <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="constellation"></div>
     </div>
-    <div class="app-shell">
-        <div id="content">
-            <button id="guide-button" class="icon" aria-label="How this works" onclick="openGuide()">?</button>
-            <h1>Make a wish<span class="emoji-star" role="img" aria-label="star">⭐</span></h1>
-            <p>Under this magical sky, make a wish and receive a reflective insight.</p>
-            <div id="initial-controls" class="input-section">
-                <div class="wish-field">
-                    <input type="text" id="wish-input" placeholder="Type your wish here..." autocomplete="off">
+    <main id="app" role="presentation">
+        <header class="app-header">
+            <div class="brand">
+                <h1>Make a wish<span aria-hidden="true">&#9733;</span></h1>
+                <p>Guided reflections crafted for Diana, wherever the night sky finds her.</p>
+            </div>
+            <button id="open-info" class="icon-button" type="button" aria-label="How this space works">?</button>
+        </header>
+
+        <section id="screen-menu" class="screen is-active" role="region" aria-labelledby="menu-heading">
+            <h2 id="menu-heading">Where shall we wander?</h2>
+            <p>Select an adventure to begin, or revisit keepsakes gathered before.</p>
+            <div class="menu-actions">
+                <button id="menu-start" class="primary" type="button">Make a wish</button>
+                <button id="menu-saved" class="secondary" type="button">Saved wishes</button>
+                <button id="menu-info" class="ghost" type="button">How this works</button>
+            </div>
+        </section>
+
+        <section id="screen-saved" class="screen" role="region" aria-labelledby="saved-heading" aria-hidden="true">
+            <div class="saved-header">
+                <div>
+                    <h2 id="saved-heading">Saved wishes</h2>
+                    <p>Continue a story, download a keepsake, or let one drift away.</p>
                 </div>
-                <div class="primary-actions">
-                    <button id="submit-btn" class="primary" onclick="processWish()">Submit Wish</button>
+                <button id="saved-back" class="icon-button" type="button" aria-label="Back to menu">&larr;</button>
+            </div>
+            <ul id="saved-list" aria-live="polite"></ul>
+        </section>
+    </main>
+
+    <section id="screen-chat" class="" role="dialog" aria-modal="true" aria-labelledby="chat-title" aria-hidden="true">
+        <div class="chat-shell">
+            <header class="chat-header">
+                <button id="chat-close" class="icon-button" type="button" aria-label="Back to menu">&larr;</button>
+                <div class="chat-titles">
+                    <h2 id="chat-title">New wish</h2>
+                    <p id="chat-subtitle">Share your wish to begin the conversation.</p>
                 </div>
-            </div>
-            <div id="response">
-                <div id="conversation-track" class="timeline"></div>
-                <div id="conversation-body" class="conversation"></div>
-            </div>
-            <div id="followup-wrapper" class="followup-block" style="display:none;">
-                <label for="followup-input">Share the next thought or question guiding you forward:</label>
-                <textarea id="followup-input" placeholder="Add a note before we continue..."></textarea>
-            </div>
-            <div class="action-bar">
-                <button id="continue-btn" class="primary" style="display:none;" onclick="continueReflection()">Continue Reflection</button>
-                <button id="store-btn" class="primary" style="display:none;" onclick="storeReflection()">Store This Reflection</button>
-                <button id="export-btn" type="button" class="primary" style="display:none;" onclick="exportConversation()">Download Conversation</button>
-                <button id="new-wish-btn" class="ghost" style="display:none;" onclick="startNewWish()">Make a New Wish</button>
-                                <button class="secondary" onclick="viewStored()">View Stored Reflections</button>
-            </div>
-            <div id="stored-list"></div>
-        </div>
-    </div>
-    <div id="toast" class="toast" role="status" aria-live="polite"></div>
-    <div id="confirm-overlay" class="modal-overlay" aria-hidden="true">
-        <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="confirm-message">
-            <p id="confirm-message"></p>
-            <div class="modal-actions">
-                <button id="confirm-yes" class="confirm-btn">Yes</button>
-                <button id="confirm-no" class="cancel-btn">Cancel</button>
+                <button id="chat-save" class="secondary" type="button" disabled>Save</button>
+            </header>
+            <div class="chat-body">
+                <div id="chat-thread" role="log" aria-live="polite"></div>
+                <div class="chat-footer">
+                    <label for="chat-input" class="sr-only" hidden>Message</label>
+                    <textarea id="chat-input" name="message" placeholder="Share your wish..." rows="2"></textarea>
+                    <div class="chat-actions">
+                        <button id="chat-reset" class="ghost" type="button" disabled>Start over</button>
+                        <button id="chat-send" class="primary" type="button">Send wish</button>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-    <div id="guide-overlay" class="info-overlay" aria-hidden="true">
-        <div class="info-card" role="dialog" aria-modal="true" aria-labelledby="guide-title">
-            <button id="guide-close" class="icon close" aria-label="Close guide">&times;</button>
-            <h2 id="guide-title">How this space works</h2>
+    </section>
+
+    <div id="info-sheet" class="overlay-sheet" role="dialog" aria-modal="true" aria-labelledby="info-title" aria-hidden="true">
+        <article class="info-card">
+            <button id="info-close" class="icon-button" type="button" aria-label="Close guide">&times;</button>
+            <h2 id="info-title">How this space works</h2>
             <ol>
-                <li><strong>Make a wish:</strong> share what is on your heart or mind and press <em>Submit Wish</em>.</li>
-                <li><strong>Receive a reflection:</strong> read the response, then jot a follow-up thought to continue the dialogue.</li>
-                <li><strong>Keep exploring:</strong> add new notes, store meaningful insights, or download the conversation as a keepsake.</li>
-                <li><strong>Return anytime:</strong> stored reflections live here so you can revisit or release them whenever you like.</li>
+                <li><strong>Make a wish:</strong> share what is on your heart and press <em>Send wish</em> to invite a reflection.</li>
+                <li><strong>Keep the dialogue flowing:</strong> add thoughts whenever you like and let Diana respond in the same thread.</li>
+                <li><strong>Save or return:</strong> capture the conversation, download it, or reopen it whenever inspiration strikes.</li>
+                <li><strong>Stay present:</strong> every reply is written for her, in the moment, under this shared sky.</li>
             </ol>
-            <p class="footnote">Tip: you can always start a fresh wish with the button beside <em>Submit Wish</em>.</p>
+            <p class="footnote">Tip: when you reopen a saved wish, new reflections will continue within the same story.</p>
+        </article>
+    </div>
+
+    <div id="confirm-sheet" class="overlay-sheet" role="dialog" aria-modal="true" aria-labelledby="confirm-message" aria-hidden="true">
+        <div class="confirm-card">
+            <p id="confirm-message">Are you sure?</p>
+            <div class="confirm-actions">
+                <button id="confirm-yes" class="danger primary" type="button">Yes</button>
+                <button id="confirm-no" class="ghost" type="button">Cancel</button>
+            </div>
         </div>
     </div>
-    <div id="overlay">
-        <div id="error-message">
-            <p>Oops, the stars aren't aligning right now. Please try again when your connection is stronger-your birthday magic awaits!</p>
-            <button onclick="hideError()">Close</button>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <div id="intro" role="dialog" aria-modal="true" aria-labelledby="intro-title">
+        <div class="intro-card">
+            <h1 id="intro-title">Happy Birthday, Diana <span aria-hidden="true">&#10084;</span></h1>
+            <p>"It all began with a simple message under the glow of the northern lights: 'I know we don't know each other, but you're living my dream...' From that unexpected spark, it blossomed into discovering a truly wonderful soul&mdash;one cared for deeply, respected immensely, and cherished no matter where life flows. Birthdays aren't just for you; they're a reminder to those who adore you that your story is magic worth celebrating."</p>
+            <button id="intro-skip" type="button">Tap to begin</button>
         </div>
     </div>
-            
-        <script>
+
+    <script>
         (() => {
-            const state = { currentWish: null, toastTimer: null, confirmAction: null, openSavedIndex: null, manualSavedCollapse: false };
-
-            const id = (value) => document.getElementById(value);
-            const qs = (value) => document.querySelector(value);
-
-            const els = {
-                overlay: id('overlay'),
-                toast: id('toast'),
-                wishInput: id('wish-input'),
-                submitBtn: id('submit-btn'),
-                followupWrapper: id('followup-wrapper'),
-                followupInput: id('followup-input'),
-                response: id('response'),
-                timeline: id('conversation-track'),
-                conversation: id('conversation-body'),
-                actionBar: qs('.action-bar'),
-                continueBtn: id('continue-btn'),
-                storeBtn: id('store-btn'),
-                exportBtn: id('export-btn'),
-                newWishBtn: id('new-wish-btn'),
-                storedList: id('stored-list'),
-                initialControls: id('initial-controls'),
-                guideOverlay: id('guide-overlay'),
-                guideClose: id('guide-close'),
-                confirmOverlay: id('confirm-overlay'),
-                confirmMessage: id('confirm-message'),
-                confirmYes: id('confirm-yes'),
-                confirmNo: id('confirm-no'),
+            const storeKey = 'reflections';
+            const baseGuidance = "You are Diana's steady inner voice. Respond with sincerity, curiosity, and gentle daring. Keep every reply under 90 words in a single paragraph and end with an original line that feels like a keepsake.";
+            const state = {
+                saved: [],
+                current: null,
+                toastTimer: null,
+                confirmHandler: null
             };
 
-            const baseGuidance = "You are Diana's steady inner voice. Respond with sincerity, curiosity, and gentle daring. Keep every reply under 90 words in a single paragraph and end with an original line that feels like a keepsake.";
+            const els = {
+                body: document.body,
+                app: document.getElementById('app'),
+                screenMenu: document.getElementById('screen-menu'),
+                screenSaved: document.getElementById('screen-saved'),
+                screenChat: document.getElementById('screen-chat'),
+                intro: document.getElementById('intro'),
+                introSkip: document.getElementById('intro-skip'),
+                menuStart: document.getElementById('menu-start'),
+                menuSaved: document.getElementById('menu-saved'),
+                menuInfo: document.getElementById('menu-info'),
+                openInfo: document.getElementById('open-info'),
+                infoSheet: document.getElementById('info-sheet'),
+                infoClose: document.getElementById('info-close'),
+                savedBack: document.getElementById('saved-back'),
+                savedList: document.getElementById('saved-list'),
+                toast: document.getElementById('toast'),
+                confirmSheet: document.getElementById('confirm-sheet'),
+                confirmMessage: document.getElementById('confirm-message'),
+                confirmYes: document.getElementById('confirm-yes'),
+                confirmNo: document.getElementById('confirm-no'),
+                chatTitle: document.getElementById('chat-title'),
+                chatSubtitle: document.getElementById('chat-subtitle'),
+                chatThread: document.getElementById('chat-thread'),
+                chatInput: document.getElementById('chat-input'),
+                chatSend: document.getElementById('chat-send'),
+                chatSave: document.getElementById('chat-save'),
+                chatReset: document.getElementById('chat-reset'),
+                chatClose: document.getElementById('chat-close')
+            };
 
-            function showError() {
-                if (els.overlay) els.overlay.style.display = 'flex';
+            const screens = {
+                menu: els.screenMenu,
+                saved: els.screenSaved
+            };
+
+            const safeString = (value) => String(value == null ? '' : value);
+            const sanitize = (value) => safeString(value).replace(/`/g, "'").replace(/\s+/g, ' ').trim();
+
+            const cloneConversation = (entry) => ({
+                id: entry.id,
+                wish: entry.wish || '',
+                messages: entry.messages ? entry.messages.map((message) => ({
+                    id: message.id || generateId('msg'),
+                    author: message.author === 'guide' ? 'guide' : 'user',
+                text: safeString(message.text).trim(),
+                    createdAt: Number.isFinite(message.createdAt) ? message.createdAt : Date.now()
+                })) : [],
+                history: entry.history ? entry.history.slice() : deriveHistory(entry.messages),
+                createdAt: Number.isFinite(entry.createdAt) ? entry.createdAt : Date.now(),
+                updatedAt: Number.isFinite(entry.updatedAt) ? entry.updatedAt : Date.now(),
+                waiting: false,
+                dirty: false
+            });
+            function deriveHistory(messages) {
+                if (!Array.isArray(messages)) return [];
+                return messages.filter((msg) => msg && msg.author === 'guide').map((msg) => safeString(msg.text).trim()).filter(Boolean);
             }
 
-            function hideError() {
-                if (els.overlay) els.overlay.style.display = 'none';
-            }
-
-            function hideToast() {
-                if (!els.toast) return;
-                els.toast.classList.remove('show', 'warn', 'error');
-                if (state.toastTimer) {
-                    clearTimeout(state.toastTimer);
-                    state.toastTimer = null;
+            function generateId(prefix = 'id') {
+                if (window.crypto && crypto.randomUUID) {
+                    return `${prefix}-${crypto.randomUUID()}`;
                 }
+                return `${prefix}-${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
             }
 
             function showToast(message, tone = 'info', duration = 2800) {
                 if (!els.toast) return;
-                hideToast();
-                els.toast.className = 'toast';
-                if (tone && tone !== 'info') els.toast.classList.add(tone);
+                clearTimeout(state.toastTimer);
                 els.toast.textContent = message;
-                void els.toast.offsetWidth;
-                els.toast.classList.add('show');
+                els.toast.className = 'toast';
+                if (tone !== 'info') els.toast.classList.add(tone);
+                requestAnimationFrame(() => els.toast.classList.add('show'));
                 if (duration !== Infinity) {
-                    state.toastTimer = window.setTimeout(hideToast, duration);
+                    state.toastTimer = window.setTimeout(() => els.toast.classList.remove('show'), duration);
                 }
             }
 
-            function showConfirm(message, onConfirm) {
-                if (!(els.confirmOverlay && els.confirmMessage)) {
-                    if (typeof onConfirm === 'function') onConfirm();
+            function hideToast() {
+                clearTimeout(state.toastTimer);
+                if (els.toast) els.toast.classList.remove('show');
+            }
+
+            function openConfirm(message, handler) {
+                if (!els.confirmSheet) return handler && handler(false);
+                state.confirmHandler = handler || null;
+                els.confirmMessage.textContent = message;
+                els.confirmSheet.classList.add('is-active');
+                els.confirmSheet.setAttribute('aria-hidden', 'false');
+                window.setTimeout(() => {
+                    if (els.confirmYes) els.confirmYes.focus();
+                }, 60);
+            }
+
+            function closeConfirm(result = false) {
+                if (!els.confirmSheet) return;
+                els.confirmSheet.classList.remove('is-active');
+                els.confirmSheet.setAttribute('aria-hidden', 'true');
+                const handler = state.confirmHandler;
+                state.confirmHandler = null;
+                if (typeof handler === 'function') handler(result);
+            }
+
+            function showInfo() {
+                if (!els.infoSheet) return;
+                els.infoSheet.classList.add('is-active');
+                els.infoSheet.setAttribute('aria-hidden', 'false');
+                window.setTimeout(() => {
+                    if (els.infoClose) els.infoClose.focus();
+                }, 60);
+            }
+
+            function hideInfo() {
+                if (!els.infoSheet) return;
+                els.infoSheet.classList.remove('is-active');
+                els.infoSheet.setAttribute('aria-hidden', 'true');
+            }
+
+            function hideIntro() {
+                if (!els.intro) return;
+                els.intro.classList.add('hidden');
+                els.intro.setAttribute('aria-hidden', 'true');
+                els.body.classList.remove('is-intro');
+                window.setTimeout(() => {
+                    if (els.intro && els.intro.parentElement) {
+                        els.intro.parentElement.removeChild(els.intro);
+                    }
+                }, 650);
+            }
+
+            function switchScreen(name) {
+                Object.entries(screens).forEach(([key, screen]) => {
+                    if (!screen) return;
+                    const active = key === name;
+                    screen.classList.toggle('is-active', active);
+                    screen.setAttribute('aria-hidden', active ? 'false' : 'true');
+                });
+            }
+
+            function showMenu() {
+                switchScreen('menu');
+            }
+
+            function showSaved() {
+                switchScreen('saved');
+            }
+
+            function openChat(entry = null) {
+                if (entry) {
+                    state.current = cloneConversation(entry);
+                    state.current.dirty = false;
+                    state.current.history = deriveHistory(state.current.messages);
+                } else {
+                    startFreshConversation();
+                }
+                renderChat(true);
+                els.screenChat.classList.add('is-active');
+                els.screenChat.setAttribute('aria-hidden', 'false');
+                els.body.classList.add('chat-open');
+                window.setTimeout(() => {
+                    if (els.chatInput) {
+                        els.chatInput.focus({ preventScroll: false });
+                    }
+                }, 120);
+            }
+
+            function closeChat(goToMenu = true) {
+                if (!els.screenChat.classList.contains('is-active')) return;
+                els.screenChat.classList.remove('is-active');
+                els.screenChat.setAttribute('aria-hidden', 'true');
+                els.body.classList.remove('chat-open');
+                if (goToMenu) showMenu();
+            }
+
+            function startFreshConversation() {
+                state.current = {
+                    id: null,
+                    wish: '',
+                    messages: [],
+                    history: [],
+                    createdAt: Date.now(),
+                    updatedAt: Date.now(),
+                    waiting: false,
+                    dirty: false
+                };
+            }
+
+            function renderChat(scrollToEnd = false) {
+                if (!els.chatThread) return;
+                els.chatThread.innerHTML = '';
+                if (!state.current) {
+                    const placeholder = document.createElement('div');
+                    placeholder.className = 'bubble thinking';
+                    const paragraph = document.createElement('p');
+                    paragraph.textContent = 'Ready when you are. Share a wish to watch the conversation unfold.';
+                    placeholder.appendChild(paragraph);
+                    els.chatThread.appendChild(placeholder);
+                    updateChatHeader();
+                    updateChatControls();
                     return;
                 }
-                state.confirmAction = onConfirm;
-                els.confirmMessage.textContent = message;
-                els.confirmOverlay.classList.add('show');
-                els.confirmOverlay.setAttribute('aria-hidden', 'false');
-                if (els.confirmYes) els.confirmYes.focus();
+
+                const fragment = document.createDocumentFragment();
+                state.current.messages.forEach((message) => {
+                    const bubble = document.createElement('article');
+                    bubble.className = `bubble ${message.author === 'guide' ? 'guide' : 'user'}`;
+
+                    const label = document.createElement('span');
+                    label.className = 'meta';
+                    label.textContent = message.author === 'guide' ? 'Diana' : 'Me';
+                    bubble.appendChild(label);
+
+                    message.text.split(/\r?\n+/).forEach((line) => {
+                        if (!line.trim()) return;
+                        const paragraph = document.createElement('p');
+                        paragraph.textContent = line.trim();
+                        bubble.appendChild(paragraph);
+                    });
+
+                    fragment.appendChild(bubble);
+                });
+
+                if (state.current.waiting) {
+                    fragment.appendChild(createThinkingBubble());
+                }
+
+                if (!state.current.messages.length && !state.current.waiting) {
+                    const nudge = document.createElement('article');
+                    nudge.className = 'bubble thinking';
+                    const text = document.createElement('p');
+                    text.textContent = 'Start with anything on your heart—a hope, a plan, or even a whisper of a dream.';
+                    nudge.appendChild(text);
+                    fragment.appendChild(nudge);
+                }
+
+                els.chatThread.appendChild(fragment);
+                if (scrollToEnd) scrollThread();
+                updateChatHeader();
+                updateChatControls();
             }
 
-            function resolveConfirm(confirmed) {
-                if (!els.confirmOverlay) return;
-                els.confirmOverlay.classList.remove('show');
-                els.confirmOverlay.setAttribute('aria-hidden', 'true');
-                const action = state.confirmAction;
-                state.confirmAction = null;
-                if (confirmed && typeof action === 'function') action();
+            function createThinkingBubble() {
+                const bubble = document.createElement('article');
+                bubble.className = 'bubble thinking';
+                const text = document.createElement('p');
+                text.textContent = 'Diana is reflecting...';
+                bubble.appendChild(text);
+                return bubble;
             }
 
-            function sanitize(value) {
-                return String(value || '').replace(/`/g, "'").replace(/\s+/g, ' ').trim();
+            function scrollThread() {
+                if (!els.chatThread) return;
+                requestAnimationFrame(() => {
+                    els.chatThread.scrollTop = els.chatThread.scrollHeight;
+                });
+            }
+
+            function updateChatHeader() {
+                if (!state.current) {
+                    els.chatTitle.textContent = 'New wish';
+                    els.chatSubtitle.textContent = 'Share your wish to begin the conversation.';
+                    return;
+                }
+                const firstUserMessage = state.current.messages.find((msg) => msg.author === 'user');
+                const guideCount = state.current.messages.filter((msg) => msg.author === 'guide').length;
+                els.chatTitle.textContent = firstUserMessage ? truncateText(firstUserMessage.text, 60) : 'New wish';
+                if (state.current.waiting) {
+                    els.chatSubtitle.textContent = 'Diana is crafting a reflection for you...';
+                } else if (guideCount) {
+                    els.chatSubtitle.textContent = `Reflections so far: ${guideCount}`;
+                } else {
+                    els.chatSubtitle.textContent = 'Share your wish to begin the conversation.';
+                }
+            }
+            function updateChatControls() {
+                if (!els.chatSend || !els.chatSave || !els.chatReset || !els.chatInput) return;
+                const inputValue = els.chatInput.value.trim();
+                const hasEnough = inputValue.replace(/[^a-zA-Z0-9]/g, '').length >= 3;
+                const hasMessages = state.current && state.current.messages && state.current.messages.length > 0;
+                const hasGuideConversation = state.current && state.current.messages.some((msg) => msg.author === 'guide');
+                els.chatSend.disabled = !hasEnough || (state.current && state.current.waiting);
+                els.chatSend.textContent = state.current && state.current.messages.length ? 'Send' : 'Send wish';
+                els.chatSave.disabled = !hasGuideConversation || (state.current && state.current.waiting) || !state.current.dirty;
+                els.chatReset.disabled = !hasMessages || (state.current && state.current.waiting);
+                els.chatInput.placeholder = hasMessages ? 'Add your next thought...' : 'Share your wish...';
+            }
+
+            function truncateText(text, maxLength) {
+                const clean = safeString(text).trim();
+                if (clean.length <= maxLength) return clean || 'New wish';
+                return `${clean.slice(0, maxLength - 1).trim()}…`;
+            }
+
+            function handleSend() {
+                if (!state.current || state.current.waiting) {
+                    return;
+                }
+                const note = els.chatInput.value.trim();
+                if (note.replace(/[^a-zA-Z0-9]/g, '').length < 3) {
+                    showToast('Add a little more detail so the stars know where to guide you.', 'warn');
+                    return;
+                }
+
+                const message = {
+                    id: generateId('msg'),
+                    author: 'user',
+                    text: note,
+                    createdAt: Date.now()
+                };
+                els.chatInput.value = '';
+                autoGrow(els.chatInput);
+
+                const wasEmpty = state.current.messages.length === 0;
+                if (wasEmpty) {
+                    state.current.wish = note;
+                }
+                state.current.messages.push(message);
+                state.current.updatedAt = Date.now();
+                state.current.dirty = true;
+                renderChat(true);
+
+                requestReflection(note, wasEmpty);
+            }
+
+            async function requestReflection(note, isInitial) {
+                state.current.waiting = true;
+                updateChatControls();
+                renderChat(true);
+
+                try {
+                    const prompt = isInitial
+                        ? buildInitialPrompt(note)
+                        : buildFollowupPrompt(state.current.wish, state.current.history, note);
+                    const reflection = await callReflectionAPI(prompt);
+                    if (!reflection) throw new Error('No reflection returned.');
+                    const trimmed = reflection.trim();
+                    if (!trimmed) throw new Error('Empty reflection.');
+
+                    const guideMessage = {
+                        id: generateId('msg'),
+                        author: 'guide',
+                        text: trimmed,
+                        createdAt: Date.now()
+                    };
+                    state.current.messages.push(guideMessage);
+                    state.current.history.push(trimmed);
+                    state.current.updatedAt = Date.now();
+                    state.current.waiting = false;
+                    state.current.dirty = true;
+                    renderChat(true);
+                } catch (error) {
+                    console.error(error);
+                    state.current.waiting = false;
+                    showToast('The connection flickered. Please try again in a moment.', 'error', 3600);
+                    renderChat(false);
+                } finally {
+                    updateChatControls();
+                }
             }
 
             function buildInitialPrompt(wish) {
@@ -1086,12 +1175,12 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
 
             function buildFollowupPrompt(wish, history, note) {
                 const cleanWish = sanitize(wish);
-                const cleanHistory = (history || []).map((entry) => sanitize(entry));
+                const cleanHistory = Array.isArray(history) ? history.map((entry) => sanitize(entry)) : [];
                 const lastReflection = cleanHistory.length ? cleanHistory[cleanHistory.length - 1] : '';
                 const earlier = cleanHistory.slice(0, -1).slice(-2);
                 const summary = earlier.length ? ' Earlier reflections already offered: ' + earlier.map((text) => `"${text}"`).join(' | ') + '.' : '';
                 const cleanNote = sanitize(note);
-                return `${baseGuidance} Original wish: "${cleanWish}". Your latest reflection was: "${lastReflection}".${summary} She now adds: "${cleanNote}". Continue the dialogue with another paragraph under 90 words that acknowledges where the last reflection leaves her, offers a fresh angle or probing question, and finishes with a distinct memorable line. If the wish still feels unclear, focus on guiding her to clarify it.`;
+                return `${baseGuidance} Original wish: "${cleanWish}". Your latest reflection was: "${lastReflection}".${summary} She now adds: "${cleanNote}". Continue the dialogue with another paragraph under 90 words that acknowledges where the last reflection leaves her, offers a fresh angle or probing question, and finishes with a distinct memorable line. If the wish still feels unclear, guide her to clarify it first.`;
             }
 
             async function callReflectionAPI(prompt) {
@@ -1100,602 +1189,424 @@ https://cdn-cf-east.streamable.com/video/mp4/46yekd.mp4?Expires=1759238433257&Ke
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ prompt })
                 });
-                if (!response.ok) throw new Error('API error');
+                if (!response.ok) {
+                    throw new Error('API request failed.');
+                }
                 const data = await response.json();
-                if (data && data.error) throw new Error(data.error.message || 'Proxy error');
+                if (data && data.error) {
+                    throw new Error(data.error.message || 'Proxy error');
+                }
                 const message = data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
                 return sanitize(message);
             }
 
-            function escapeHtml(str) {
-                return String(str || '')
-                    .replace(/&/g, '&amp;')
-                    .replace(/</g, '&lt;')
-                    .replace(/>/g, '&gt;')
-                    .replace(/"/g, '&quot;')
-                    .replace(/'/g, '&#39;');
-            }
-
-            function normalizeTimelineEntry(entry, index = 0) {
-                if (!entry) {
-                    return { type: 'guide', label: 'Diana', meta: '', text: '' };
-                }
-                const rawType = String(entry.type || '').toLowerCase();
-                let type;
-                if (rawType === 'me' || rawType === 'wish' || rawType === 'note') {
-                    type = 'me';
-                } else if (rawType === 'guide' || rawType === 'companion' || rawType === 'reflection') {
-                    type = 'guide';
-                } else if (rawType === 'thinking') {
-                    type = 'guide';
-                } else {
-                    type = index % 2 === 0 ? 'me' : 'guide';
-                }
-                const rawLabel = entry.label || '';
-                let label = rawLabel || (type === 'me' ? 'Me' : 'Diana');
-                if (/^note/i.test(label) || label === 'Wish') {
-                    label = 'Me';
-                }
-                if (/^reflection/i.test(label)) {
-                    label = 'Diana';
-                }
-                if (type === 'me') label = 'Me';
-                if (type === 'guide') label = 'Diana';
-                let meta = entry.meta || '';
-                if (!meta) {
-                    if (rawType === 'wish' || /wish/i.test(rawLabel) || index === 0) {
-                        meta = 'Wish';
-                    } else if (/^reflection/i.test(rawLabel) || rawType === 'reflection') {
-                        const match = rawLabel.match(/(\d+)/);
-                        meta = match ? `Reflection ${match[1]}` : 'Reflection';
-                    } else if (/^note/i.test(rawLabel)) {
-                        const match = rawLabel.match(/(\d+)/);
-                        if (match) meta = `Me ${match[1]}`;
-                    }
-                }
-                const textValue = entry.text || '';
-                return {
-                    type,
-                    label,
-                    meta: meta && meta !== label ? meta : (meta === label ? '' : meta),
-                    text: textValue
-                };
-            }
-
-            function formatTimelineForDisplay(timeline) {
-                if (!Array.isArray(timeline) || !timeline.length) return '';
-                return timeline.map((entry, index) => {
-                    const normalized = normalizeTimelineEntry(entry, index);
-                    const body = escapeHtml(normalized.text || '').replace(/\r?\n/g, '<br/>');
-                    const meta = normalized.meta ? `<span class="stored-meta">${escapeHtml(normalized.meta)}</span>` : '';
-                    return `<article class="stored-event ${normalized.type}"><header><span class="conversation-label ${normalized.type}">${escapeHtml(normalized.label)}</span>${meta}</header><p>${body}</p></article>`;
-                }).join('');
-            }
-
-            function focusFollowup() {
-                if (!els.followupInput || els.followupInput.disabled || els.followupWrapper.style.display === 'none') return;
-                window.setTimeout(() => {
-                    if (!els.followupInput.disabled) {
-                        els.followupInput.focus({ preventScroll: false });
-                    }
-                }, 200);
-            }
-
-            function updateActionVisibility() {
-                if (els.storedList && els.storedList.style.display === 'flex') {
-                    if (els.actionBar) els.actionBar.style.display = 'none';
+            function saveConversation() {
+                if (!state.current) {
+                    showToast('Start a wish before saving to your keepsakes.', 'warn');
                     return;
                 }
-                const current = state.currentWish;
-                const hasReflection = !!(current && current.history && current.history.length);
-                const waiting = !!(current && current.waiting);
-
-                if (els.initialControls) els.initialControls.style.display = hasReflection ? 'none' : 'flex';
-                if (els.actionBar) els.actionBar.style.display = 'flex';
-                if (els.followupWrapper) els.followupWrapper.style.display = hasReflection ? 'flex' : 'none';
-                if (els.followupInput) {
-                    els.followupInput.disabled = !hasReflection || waiting;
-                    if (!hasReflection) els.followupInput.value = '';
-                }
-                if (els.continueBtn) {
-                    const noteReady = els.followupInput && els.followupInput.value.trim().replace(/[^a-zA-Z0-9]/g, '').length >= 3;
-                    els.continueBtn.style.display = hasReflection ? 'inline-flex' : 'none';
-                    els.continueBtn.disabled = !hasReflection || waiting || !noteReady;
-                }
-                if (els.storeBtn) els.storeBtn.style.display = hasReflection ? 'inline-flex' : 'none';
-                if (els.exportBtn) els.exportBtn.style.display = hasReflection ? 'inline-flex' : 'none';
-                if (els.newWishBtn) els.newWishBtn.style.display = hasReflection ? 'inline-flex' : 'none';
-                if (els.submitBtn) els.submitBtn.disabled = waiting;
-            }
-
-            function buildBubble(entry, index = 0, isNormalized = false) {
-                const normalized = isNormalized ? entry : normalizeTimelineEntry(entry, index);
-                const bubble = document.createElement('div');
-                bubble.className = `bubble ${normalized.type}`;
-                if (normalized.label || normalized.meta) {
-                    const header = document.createElement('div');
-                    header.className = 'bubble-header';
-                    const badge = document.createElement('span');
-                    badge.className = `speaker-badge ${normalized.type}`;
-                    badge.textContent = normalized.label || (normalized.type === 'me' ? 'Me' : 'Diana');
-                    header.appendChild(badge);
-                    if (normalized.meta && normalized.meta !== normalized.label) {
-                        const meta = document.createElement('span');
-                        meta.className = 'bubble-meta';
-                        meta.textContent = normalized.meta;
-                        header.appendChild(meta);
-                    }
-                    bubble.appendChild(header);
-                }
-                normalized.text.split(/\r?\n+/).forEach((paragraph) => {
-                    const trimmed = paragraph.trim();
-                    if (!trimmed) return;
-                    const p = document.createElement('p');
-                    p.textContent = trimmed;
-                    bubble.appendChild(p);
-                });
-                return bubble;
-            }
-
-            function renderTimeline({ animate = true } = {}) {
-                if (!els.response || !els.timeline || !els.conversation) return;
-                const current = state.currentWish;
-                const hasTimeline = !!(current && Array.isArray(current.timeline) && current.timeline.length);
-
-                els.timeline.innerHTML = '';
-                els.conversation.innerHTML = '';
-
-                if (!hasTimeline) {
-                    if (current && current.waiting) {
-                        els.response.style.display = 'flex';
-                        els.response.classList.remove('is-visible');
-                        els.response.classList.add('is-pending');
-                        const thinking = buildBubble({
-                            type: 'guide',
-                            label: 'Diana',
-                            meta: 'Listening',
-                            text: 'Reflecting on your wish...'
-                        }, 0, true);
-                        thinking.classList.add('thinking');
-                        els.conversation.appendChild(thinking);
-                    } else {
-                        els.response.classList.remove('is-visible', 'is-pending');
-                        els.response.style.display = 'none';
-                    }
-                    updateActionVisibility();
+                const hasGuide = state.current.messages.some((msg) => msg.author === 'guide');
+                if (!hasGuide) {
+                    showToast('Let Diana reply before saving this wish.', 'warn');
                     return;
                 }
 
-                const normalizedTimeline = current.timeline.map((entry, index) => normalizeTimelineEntry(entry, index));
-
-                normalizedTimeline.forEach((normalized, index) => {
-                    const crumb = document.createElement('div');
-                    crumb.className = `crumb ${normalized.type}`;
-                    if (index === 0) crumb.classList.add('is-first');
-                    if (index === normalizedTimeline.length - 1) crumb.classList.add('is-last');
-                    if (current.waiting && index === normalizedTimeline.length - 1) {
-                        crumb.classList.add('is-pending');
-                    }
-                    const descriptor = normalized.meta ? `${normalized.label}: ${normalized.meta}` : normalized.label;
-                    crumb.setAttribute('aria-label', descriptor);
-                    const dot = document.createElement('span');
-                    dot.className = 'crumb-dot';
-                    crumb.appendChild(dot);
-                    els.timeline.appendChild(crumb);
-
-                    els.conversation.appendChild(buildBubble(normalized, index, true));
-                });
-
-                if (current.waiting) {
-                    const thinking = buildBubble({
-                        type: 'guide',
-                        label: 'Diana',
-                        meta: 'Writing',
-                        text: 'Reflecting on your words...'
-                    }, normalizedTimeline.length, true);
-                    thinking.classList.add('thinking');
-                    els.conversation.appendChild(thinking);
-                }
-
-                els.response.style.display = 'flex';
-                if (animate) {
-                    els.response.classList.remove('is-visible');
-                    void els.response.offsetWidth;
-                }
-                els.response.classList.remove('is-pending');
-                els.response.classList.add('is-visible');
-
-                window.setTimeout(() => {
-                    els.conversation.scrollTop = els.conversation.scrollHeight;
-                }, 60);
-
-                updateActionVisibility();
-                focusFollowup();
-            }
-
-            function createTimelineSnapshot(timeline) {
-                return Array.isArray(timeline) ? timeline.map((entry, index) => {
-                    const normalized = normalizeTimelineEntry(entry, index);
-                    return {
-                        type: normalized.type,
-                        label: normalized.label,
-                        meta: normalized.meta,
-                        text: normalized.text
-                    };
-                }) : [];
-            }
-
-            async function processWish() {
-                const rawWish = els.wishInput ? els.wishInput.value.trim() : '';
-                if (!rawWish) {
-                    showToast('Share a wish before sending it to the stars.', 'warn');
-                    return;
-                }
-                const minimal = rawWish.replace(/[^a-zA-Z0-9]/g, '');
-                if (minimal.length < 3) {
-                    showToast('Give a little more detail so the reflection can truly help.', 'warn');
-                    return;
-                }
-                if (els.followupInput) els.followupInput.value = '';
-                if (els.submitBtn) els.submitBtn.disabled = true;
-
-                state.currentWish = {
-                    wish: rawWish,
-                    history: [],
-                    timeline: [{ type: 'me', label: 'Me', meta: 'Wish', text: rawWish }],
-                    waiting: true
-                };
-                renderTimeline({ animate: false });
-
-                try {
-                    const prompt = buildInitialPrompt(rawWish);
-                    const reflection = await callReflectionAPI(prompt);
-                    if (!reflection) throw new Error('Empty reflection');
-                    state.currentWish.history.push(reflection);
-                    state.currentWish.timeline.push({ type: 'guide', label: 'Diana', meta: `Reflection ${state.currentWish.history.length}`, text: reflection });
-                    state.currentWish.waiting = false;
-                    renderTimeline({ animate: true });
-                } catch (error) {
-                    console.error(error);
-                    state.currentWish = null;
-                    renderTimeline({ animate: false });
-                    showError();
-                } finally {
-                    if (els.submitBtn) els.submitBtn.disabled = false;
-                    updateActionVisibility();
-                }
-            }
-
-            async function continueReflection() {
-                if (!state.currentWish || !state.currentWish.history || !state.currentWish.history.length) {
-                    showToast('Make a wish first, then we can go deeper.', 'warn');
-                    return;
-                }
-                if (!els.followupInput) return;
-                const note = els.followupInput.value.trim();
-                if (note.replace(/[^a-zA-Z0-9]/g, '').length < 3) {
-                    showToast('Share a little more so we can continue meaningfully.', 'warn');
-                    return;
-                }
-
-                if (els.continueBtn) els.continueBtn.disabled = true;
-                if (els.storeBtn) els.storeBtn.style.display = 'none';
-
-                state.currentWish.timeline.push({ type: 'me', label: 'Me', meta: '', text: note });
-                state.currentWish.waiting = true;
-                renderTimeline({ animate: false });
-
-                try {
-                    const prompt = buildFollowupPrompt(state.currentWish.wish, state.currentWish.history, note);
-                    const reflection = await callReflectionAPI(prompt);
-                    if (!reflection) throw new Error('Empty reflection');
-                    state.currentWish.history.push(reflection);
-                    state.currentWish.timeline.push({ type: 'guide', label: 'Diana', meta: `Reflection ${state.currentWish.history.length}`, text: reflection });
-                    state.currentWish.waiting = false;
-                    if (els.followupInput) els.followupInput.value = '';
-                    renderTimeline({ animate: true });
-                } catch (error) {
-                    console.error(error);
-                    state.currentWish.timeline.pop();
-                    state.currentWish.waiting = false;
-                    renderTimeline({ animate: false });
-                    showError();
-                } finally {
-                    if (els.continueBtn) els.continueBtn.disabled = false;
-                    updateActionVisibility();
-                }
-            }
-
-            function storeReflection() {
-                if (!state.currentWish || !state.currentWish.history || !state.currentWish.history.length) return;
                 const entry = {
-                    wish: state.currentWish.wish,
-                    history: state.currentWish.history.slice(),
-                    reflection: state.currentWish.history.join(''),
-                    timeline: createTimelineSnapshot(state.currentWish.timeline)
+                    id: state.current.id || generateId('wish'),
+                    wish: state.current.wish,
+                    messages: state.current.messages.map((message) => ({
+                        id: message.id || generateId('msg'),
+                        author: message.author === 'guide' ? 'guide' : 'user',
+                        text: safeString(message.text).trim(),
+                        createdAt: Number.isFinite(message.createdAt) ? message.createdAt : Date.now()
+                    })),
+                    history: state.current.history.slice(),
+                    createdAt: state.current.id ? state.current.createdAt : state.current.createdAt || Date.now(),
+                    updatedAt: Date.now()
                 };
-                const stored = JSON.parse(localStorage.getItem('reflections') || '[]');
-                const normalizedWish = (entry.wish || '').trim().toLowerCase();
-                const duplicateIndex = stored.findIndex((item) => (item && item.wish ? item.wish.trim().toLowerCase() : '') === normalizedWish);
-                if (duplicateIndex !== -1) {
-                    showToast('That wish is already stored. Open it from your keepsakes.', 'warn');
-                    return;
+
+                const existingIndex = state.saved.findIndex((item) => item.id === entry.id);
+                if (existingIndex >= 0) {
+                    state.saved.splice(existingIndex, 1, entry);
+                } else {
+                    state.saved.push(entry);
                 }
-                stored.push(entry);
-                localStorage.setItem('reflections', JSON.stringify(stored));
-                state.openSavedIndex = stored.length - 1;
-                state.manualSavedCollapse = false;
+                state.current.id = entry.id;
+                state.current.createdAt = entry.createdAt;
+                state.current.updatedAt = entry.updatedAt;
+                state.current.dirty = false;
+
+                persistSaved();
+                renderSavedList();
+                updateChatControls();
                 showToast('Wish saved to your keepsakes.', 'info');
-                if (els.storedList && els.storedList.style.display === 'flex') {
-                    renderStoredList();
-                }
             }
-            function exportConversation() {
-                if (!state.currentWish || !state.currentWish.timeline || !state.currentWish.timeline.length) {
-                    showToast('There is no conversation to export yet.', 'warn');
-                    return;
-                }
-                const popup = window.open('', '_blank');
-                if (!popup) {
-                    showToast('Enable pop-ups to download the conversation.', 'error', 3500);
-                    return;
-                }
-                const title = 'Wish Reflection';
-                const items = state.currentWish.timeline.map((entry, index) => {
-                    const normalized = normalizeTimelineEntry(entry, index);
-                    const headingMeta = normalized.meta && normalized.meta !== normalized.label ? ` <small>${escapeHtml(normalized.meta)}</small>` : '';
-                    const text = escapeHtml(normalized.text || '').replace(/\r?\n/g, '<br/>');
-                    return `<section class="export-entry ${normalized.type}"><h3>${escapeHtml(normalized.label)}${headingMeta}</h3><p>${text}</p></section>`;
-                }).join('');
-                popup.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>${title}</title><style>body{font-family:Georgia,serif;padding:40px;background:#0b1c2a;color:#effff7;}h1{text-align:center;margin-bottom:30px;}section.export-entry{margin-bottom:24px;padding:18px;border-radius:12px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);}section.export-entry.me{background:rgba(255,215,0,0.12);border-color:rgba(255,215,0,0.35);}section.export-entry.guide{background:rgba(0,255,200,0.12);border-color:rgba(0,255,200,0.35);}section.export-entry h3{display:flex;justify-content:space-between;align-items:center;margin:0 0 10px;gap:12px;}section.export-entry h3 small{font-weight:normal;font-size:0.85em;color:#cbeaf5;}p{margin:0;line-height:1.6;}</style></head><body><h1>${escapeHtml(state.currentWish.wish)}</h1>${items}</body></html>`);
-                popup.document.close();
-                popup.focus();
-                popup.print();
-            }
-            function renderStoredList() {
-                if (!els.storedList) return;
-                const stored = JSON.parse(localStorage.getItem('reflections') || '[]');
-                if (!stored.length) {
-                    els.storedList.innerHTML = '<div class="stored-empty"><button class="back-button" type="button" onclick="backToMain()">Back</button><p>No stored reflections yet.</p></div>';
-                    return;
-                }
-                const total = stored.length;
-                if (total) {
-                    if (state.openSavedIndex === null) {
-                        if (!state.manualSavedCollapse) {
-                            state.openSavedIndex = total - 1;
-                        }
-                    } else if (state.openSavedIndex >= total) {
-                        state.openSavedIndex = total - 1;
+
+            function deleteConversation(id) {
+                const index = state.saved.findIndex((entry) => entry.id === id);
+                if (index === -1) return;
+                const entry = state.saved[index];
+                openConfirm('Delete this reflection? It will drift back into the night sky.', (result) => {
+                    if (!result) return;
+                    state.saved.splice(index, 1);
+                    persistSaved();
+                    renderSavedList();
+                    if (state.current && state.current.id === id) {
+                        state.current.id = null;
+                        state.current.dirty = true;
                     }
-                } else {
-                    state.openSavedIndex = null;
-                    state.manualSavedCollapse = false;
-                }
-                const items = stored.map((entry, index) => {
-                    const wishText = entry && entry.wish ? entry.wish : `Wish ${index + 1}`;
-                    const wish = escapeHtml(wishText);
-                    const timeline = entry && Array.isArray(entry.timeline) && entry.timeline.length
-                        ? entry.timeline
-                        : [
-                            { type: 'me', label: 'Me', meta: 'Wish', text: entry && entry.wish ? entry.wish : '' },
-                            { type: 'guide', label: 'Diana', meta: 'Reflection', text: entry && entry.reflection ? entry.reflection : '' }
-                        ];
-                    const count = Array.isArray(timeline) ? timeline.length : 0;
-                    const isOpen = state.openSavedIndex === index;
-                    const details = formatTimelineForDisplay(timeline);
-                    return `<li class="saved-item ${isOpen ? 'is-open' : ''}">` +
-                        `<button class="saved-toggle" type="button" data-index="${index}" aria-expanded="${isOpen}" aria-controls="saved-details-${index}">` +
-                        `<span class="saved-title">${wish}</span>` +
-                        `<span class="saved-count">${count}</span>` +
-                        '<span class="saved-chevron" aria-hidden="true"></span>' +
-                        '</button>' +
-                        `<div class="saved-details"${isOpen ? ' aria-hidden="false"' : ' hidden aria-hidden="true"'} id="saved-details-${index}">` +
-                        `<div class="saved-conversation">${details}</div>` +
-                        '<div class="row-actions">' +
-                        `<button class="secondary" type="button" onclick="exportStoredConversation(${index})">Download</button>` +
-                        `<button class="delete-btn" type="button" onclick="deleteReflection(${index})">Delete</button>` +
-                        '</div>' +
-                        '</div>' +
-                        '</li>';
-                }).join('');
-                els.storedList.innerHTML = `<div class="stored-header"><button class="back-button" type="button" onclick="backToMain()">Back</button></div><ul class="saved-list">${items}</ul>`;
+                    showToast('Reflection released.', 'info');
+                });
             }
 
-            function toggleSavedItem(index) {
-                const stored = JSON.parse(localStorage.getItem('reflections') || '[]');
-                if (!stored.length || index < 0 || index >= stored.length) return;
-                if (state.openSavedIndex === index) {
-                    state.openSavedIndex = null;
-                    state.manualSavedCollapse = true;
-                } else {
-                    state.openSavedIndex = index;
-                    state.manualSavedCollapse = false;
-                }
-                renderStoredList();
-            }
-
-            function viewStored() {
-                if (!els.storedList) return;
-                state.manualSavedCollapse = false;
-                els.storedList.style.display = 'flex';
-                if (els.response) els.response.style.display = 'none';
-                if (els.followupWrapper) els.followupWrapper.style.display = 'none';
-                if (els.actionBar) els.actionBar.style.display = 'none';
-                if (els.initialControls) els.initialControls.style.display = 'none';
-                renderStoredList();
-            }
-
-            function exportStoredConversation(index) {
-                const stored = JSON.parse(localStorage.getItem('reflections') || '[]');
-                if (!stored.length) {
-                    showToast('No stored reflections to download yet.', 'warn');
-                    return;
-                }
-                if (index < 0 || index >= stored.length) {
+            function downloadConversation(id) {
+                const entry = state.saved.find((item) => item.id === id);
+                if (!entry) {
                     showToast('That reflection could not be found.', 'error');
                     return;
                 }
-                const entry = stored[index];
-                const timeline = Array.isArray(entry.timeline) && entry.timeline.length
-                    ? entry.timeline
-                    : [
-                        { type: 'me', label: 'Me', meta: 'Wish', text: entry && entry.wish ? entry.wish : '' },
-                        { type: 'guide', label: 'Diana', meta: 'Reflection', text: entry && entry.reflection ? entry.reflection : '' }
-                    ];
-                const normalized = timeline.map((item, idx) => normalizeTimelineEntry(item, idx));
-                const popup = window.open('', '_blank');
-                if (!popup) {
-                    showToast('Enable pop-ups to download the conversation.', 'error', 3500);
+                const lines = [];
+                lines.push(`Wish: ${entry.wish}`);
+                lines.push('');
+                entry.messages.forEach((message, index) => {
+                    const author = message.author === 'guide' ? 'Diana' : 'Me';
+                    lines.push(`${index + 1}. ${author}`);
+                    lines.push(message.text);
+                    lines.push('');
+                });
+                const text = lines.join('\n');
+                const blob = new Blob([text], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                const timestamp = new Date(entry.updatedAt || Date.now()).toISOString().slice(0, 10);
+                link.href = url;
+                link.download = `wish-${timestamp}.txt`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                showToast('Download ready.', 'info');
+            }
+
+            function renderSavedList() {
+                if (!els.savedList) return;
+                els.savedList.innerHTML = '';
+                if (!state.saved.length) {
+                    const empty = document.createElement('div');
+                    empty.className = 'saved-empty';
+                    const title = document.createElement('h3');
+                    title.textContent = 'No saved wishes yet';
+                    const hint = document.createElement('p');
+                    hint.textContent = 'Save any reflection from the chat to keep it close, download it, or revisit whenever inspiration arrives.';
+                    empty.appendChild(title);
+                    empty.appendChild(hint);
+                    els.savedList.appendChild(empty);
                     return;
                 }
-                const items = normalized.map((entryItem) => {
-                    const headingMeta = entryItem.meta && entryItem.meta !== entryItem.label
-                        ? ` <small>${escapeHtml(entryItem.meta)}</small>`
-                        : '';
-                    const textContent = escapeHtml(entryItem.text || '').replace(/\r?\n/g, '<br/>');
-                    return `<section class="export-entry ${entryItem.type}"><h3>${escapeHtml(entryItem.label)}${headingMeta}</h3><p>${textContent}</p></section>`;
-                }).join('');
-                popup.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>${escapeHtml(entry.wish || 'Wish Reflection')}</title><style>body{font-family:Georgia,serif;padding:40px;background:#0b1c2a;color:#effff7;}h1{text-align:center;margin-bottom:30px;}section.export-entry{margin-bottom:24px;padding:18px;border-radius:12px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);}section.export-entry.me{background:rgba(255,215,0,0.12);border-color:rgba(255,215,0,0.35);}section.export-entry.guide{background:rgba(0,255,200,0.12);border-color:rgba(0,255,200,0.35);}section.export-entry h3{display:flex;justify-content:space-between;align-items:center;margin:0 0 10px;gap:12px;}section.export-entry h3 small{font-weight:normal;font-size:0.85em;color:#cbeaf5;}p{margin:0;line-height:1.6;}</style></head><body><h1>${escapeHtml(entry.wish || 'Wish Reflection')}</h1>${items}</body></html>`);
-                popup.document.close();
-                popup.focus();
-                popup.print();
-            }
 
-            function deleteReflection(index) {
-                showConfirm('Delete this reflection? The insight will be lost to the night.', () => {
-                    const stored = JSON.parse(localStorage.getItem('reflections') || '[]');
-                    if (index < 0 || index >= stored.length) return;
-                    stored.splice(index, 1);
-                    localStorage.setItem('reflections', JSON.stringify(stored));
-                    if (state.openSavedIndex === index) {
-                        state.openSavedIndex = null;
-                    } else if (state.openSavedIndex !== null && state.openSavedIndex > index) {
-                        state.openSavedIndex -= 1;
+                const sorted = state.saved.slice().sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+                const fragment = document.createDocumentFragment();
+
+                sorted.forEach((entry) => {
+                    const card = document.createElement('li');
+                    card.className = 'saved-card';
+                    card.dataset.id = entry.id;
+                    if (state.current && state.current.id === entry.id) {
+                        card.classList.add('is-current');
                     }
-                    state.manualSavedCollapse = false;
-                    renderStoredList();
-                    showToast('Reflection removed.', 'info');
+
+                    const header = document.createElement('header');
+                    const title = document.createElement('h3');
+                    title.textContent = entry.wish ? truncateText(entry.wish, 80) : 'Untitled wish';
+                    const preview = document.createElement('p');
+                    const lastGuide = (entry.messages || []).slice().reverse().find((msg) => msg.author === 'guide');
+                    preview.textContent = lastGuide ? truncateText(lastGuide.text, 120) : 'No reflections captured yet.';
+                    header.appendChild(title);
+                    header.appendChild(preview);
+
+                    const meta = document.createElement('div');
+                    meta.className = 'saved-meta';
+                    const count = document.createElement('span');
+                    const messageCount = entry.messages ? entry.messages.length : 0;
+                    count.textContent = `${messageCount} message${messageCount === 1 ? '' : 's'}`;
+                    const updated = document.createElement('span');
+                    const updatedDate = entry.updatedAt ? new Date(entry.updatedAt) : new Date();
+                    updated.textContent = `Updated ${formatDate(updatedDate)}`;
+                    meta.appendChild(count);
+                    meta.appendChild(updated);
+
+                    const actions = document.createElement('div');
+                    actions.className = 'saved-actions';
+
+                    const continueBtn = document.createElement('button');
+                    continueBtn.type = 'button';
+                    continueBtn.className = 'primary';
+                    continueBtn.dataset.action = 'open';
+                    continueBtn.textContent = 'Continue';
+                    actions.appendChild(continueBtn);
+
+                    const downloadBtn = document.createElement('button');
+                    downloadBtn.type = 'button';
+                    downloadBtn.className = 'secondary';
+                    downloadBtn.dataset.action = 'download';
+                    downloadBtn.textContent = 'Download';
+                    actions.appendChild(downloadBtn);
+
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.type = 'button';
+                    deleteBtn.className = 'delete secondary';
+                    deleteBtn.dataset.action = 'delete';
+                    deleteBtn.textContent = 'Delete';
+                    actions.appendChild(deleteBtn);
+
+                    card.appendChild(header);
+                    card.appendChild(meta);
+                    card.appendChild(actions);
+                    fragment.appendChild(card);
                 });
+
+                els.savedList.appendChild(fragment);
             }
 
-            function startNewWish() {
-                state.currentWish = null;
-                state.openSavedIndex = null;
-                state.manualSavedCollapse = false;
-                if (els.wishInput) {
-                    els.wishInput.value = '';
-                    els.wishInput.focus();
+            function persistSaved() {
+                try {
+                    localStorage.setItem(storeKey, JSON.stringify(state.saved));
+                } catch (error) {
+                    console.error('Unable to persist reflections', error);
+                    showToast('Storage is unavailable. Changes may not be saved.', 'error', 4000);
                 }
-                if (els.followupInput) els.followupInput.value = '';
-                renderTimeline({ animate: false });
-                updateActionVisibility();
             }
 
-            function backToMain() {
-                state.openSavedIndex = null;
-                state.manualSavedCollapse = false;
-                if (els.storedList) {
-                    els.storedList.style.display = 'none';
-                    els.storedList.innerHTML = '';
+            function loadSaved() {
+                let stored = [];
+                try {
+                    const raw = localStorage.getItem(storeKey);
+                    if (raw) {
+                        const parsed = JSON.parse(raw);
+                        if (Array.isArray(parsed)) {
+                            stored = parsed.map(normalizeEntry).filter(Boolean);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Unable to load reflections', error);
+                    stored = [];
                 }
-                if (els.actionBar) els.actionBar.style.display = 'flex';
-                if (els.initialControls) {
-                    const hasHistory = !!(state.currentWish && state.currentWish.history && state.currentWish.history.length);
-                    els.initialControls.style.display = hasHistory ? 'none' : 'flex';
+                state.saved = stored;
+                persistSaved();
+                renderSavedList();
+            }
+            function normalizeEntry(entry) {
+                if (!entry) return null;
+                if (entry.messages && Array.isArray(entry.messages)) {
+                    const normalizedMessages = entry.messages.map((message) => ({
+                        id: message.id || generateId('msg'),
+                        author: message.author === 'guide' ? 'guide' : 'user',
+                        text: safeString(message.text).trim(),
+                        createdAt: Number.isFinite(message.createdAt) ? message.createdAt : Date.now()
+                    })).filter((message) => message.text.length);
+                    return {
+                        id: entry.id || generateId('wish'),
+                        wish: entry.wish || (normalizedMessages[0] && normalizedMessages[0].author === 'user' ? normalizedMessages[0].text : ''),
+                        messages: normalizedMessages,
+                        history: Array.isArray(entry.history) && entry.history.length ? entry.history.map((item) => safeString(item).trim()) : deriveHistory(normalizedMessages),
+                        createdAt: Number.isFinite(entry.createdAt) ? entry.createdAt : Date.now(),
+                        updatedAt: Number.isFinite(entry.updatedAt) ? entry.updatedAt : Date.now()
+                    };
                 }
-                if (els.followupWrapper) {
-                    const hasHistory = !!(state.currentWish && state.currentWish.history && state.currentWish.history.length);
-                    els.followupWrapper.style.display = hasHistory ? 'flex' : 'none';
+
+                if (entry.timeline && Array.isArray(entry.timeline)) {
+                    const messages = entry.timeline.map((item, index) => {
+                        const author = item.type === 'guide' ? 'guide' : 'user';
+                        return {
+                            id: generateId('msg'),
+                            author,
+                            text: safeString(item.text).trim(),
+                            createdAt: Date.now() - (entry.timeline.length - index) * 60000
+                        };
+                    }).filter((message) => message.text.length);
+                    return {
+                        id: entry.id || generateId('wish'),
+                        wish: entry.wish || (messages[0] && messages[0].author === 'user' ? messages[0].text : ''),
+                        messages,
+                        history: deriveHistory(messages),
+                        createdAt: Number.isFinite(entry.createdAt) ? entry.createdAt : Date.now(),
+                        updatedAt: Number.isFinite(entry.updatedAt) ? entry.updatedAt : Date.now()
+                    };
                 }
-                if (els.response) {
-                    const hasTimeline = !!(state.currentWish && state.currentWish.timeline && state.currentWish.timeline.length);
-                    els.response.style.display = hasTimeline ? 'flex' : 'none';
+
+                if (entry.history && Array.isArray(entry.history) && entry.wish) {
+                    const messages = [];
+                    messages.push({
+                        id: generateId('msg'),
+                        author: 'user',
+                        text: safeString(entry.wish).trim(),
+                        createdAt: Date.now()
+                    });
+                    entry.history.forEach((reflection, index) => {
+                        messages.push({
+                            id: generateId('msg'),
+                            author: 'guide',
+                            text: safeString(reflection).trim(),
+                            createdAt: Date.now() + (index + 1) * 60000
+                        });
+                    });
+                    return {
+                        id: entry.id || generateId('wish'),
+                        wish: safeString(entry.wish).trim(),
+                        messages,
+                        history: entry.history.map((item) => safeString(item).trim()),
+                        createdAt: Number.isFinite(entry.createdAt) ? entry.createdAt : Date.now(),
+                        updatedAt: Number.isFinite(entry.updatedAt) ? entry.updatedAt : Date.now()
+                    };
                 }
-                renderTimeline({ animate: false });
-                updateActionVisibility();
+
+                return null;
             }
 
-            function openGuide() {
-                if (!els.guideOverlay) return;
-                els.guideOverlay.classList.add('show');
-                els.guideOverlay.setAttribute('aria-hidden', 'false');
+            function formatDate(date) {
+                if (!(date instanceof Date) || Number.isNaN(date.getTime())) return 'just now';
+                return date.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
             }
 
-            function closeGuide() {
-                if (!els.guideOverlay) return;
-                els.guideOverlay.classList.remove('show');
-                els.guideOverlay.setAttribute('aria-hidden', 'true');
+            function autoGrow(textarea) {
+                if (!textarea) return;
+                textarea.style.height = 'auto';
+                textarea.style.height = `${Math.min(180, textarea.scrollHeight)}px`;
             }
 
-            function skipIntro() {
-                const intro = document.getElementById('intro');
-                if (!intro) return;
-                intro.classList.add('hidden');
-                document.body.classList.remove('intro-active');
-            }
-
-            if (els.confirmYes) els.confirmYes.addEventListener('click', () => resolveConfirm(true));
-            if (els.confirmNo) els.confirmNo.addEventListener('click', () => resolveConfirm(false));
-            if (els.confirmOverlay) els.confirmOverlay.addEventListener('click', (event) => {
-                if (event.target === els.confirmOverlay) resolveConfirm(false);
-            });
-            window.addEventListener('keydown', (event) => {
-                if (event.key === 'Escape' && els.confirmOverlay && els.confirmOverlay.classList.contains('show')) {
-                    resolveConfirm(false);
+            function handleSavedListClick(event) {
+                const button = event.target.closest('button[data-action]');
+                if (!button) return;
+                const card = button.closest('.saved-card');
+                if (!card) return;
+                const id = card.dataset.id;
+                if (!id) return;
+                switch (button.dataset.action) {
+                    case 'open': {
+                        const entry = state.saved.find((item) => item.id === id);
+                        if (!entry) {
+                            showToast('That reflection could not be found.', 'error');
+                            return;
+                        }
+                        openChat(entry);
+                        break;
+                    }
+                    case 'download':
+                        downloadConversation(id);
+                        break;
+                    case 'delete':
+                        deleteConversation(id);
+                        break;
+                    default:
+                        break;
                 }
-            });
-
-            if (els.followupInput) els.followupInput.addEventListener('input', updateActionVisibility);
-            if (els.guideOverlay) els.guideOverlay.addEventListener('click', (event) => {
-                if (event.target === els.guideOverlay) closeGuide();
-            });
-            if (els.guideClose) els.guideClose.addEventListener('click', closeGuide);
-
-            if (els.storedList) {
-                els.storedList.addEventListener('click', (event) => {
-                    const deleteBtn = event.target.closest('.delete-btn');
-                    if (deleteBtn) return;
-                    const toggle = event.target.closest('.saved-toggle');
-                    if (!toggle) return;
-                    event.preventDefault();
-                    const index = Number(toggle.dataset.index);
-                    if (Number.isNaN(index)) return;
-                    toggleSavedItem(index);
-                });
             }
 
-            const intro = document.getElementById('intro');
-            const skipButton = document.getElementById('skip-text');
-            if (intro) {
-                document.body.classList.add('intro-active');
-                if (skipButton) skipButton.addEventListener('click', skipIntro);
-                window.setTimeout(skipIntro, 50000);
+            function handleKeyDown(event) {
+                if (event.key === 'Escape') {
+                    if (els.confirmSheet && els.confirmSheet.classList.contains('is-active')) {
+                        event.preventDefault();
+                        closeConfirm(false);
+                        return;
+                    }
+                    if (els.infoSheet && els.infoSheet.classList.contains('is-active')) {
+                        event.preventDefault();
+                        hideInfo();
+                        return;
+                    }
+                    if (els.screenChat && els.screenChat.classList.contains('is-active')) {
+                        event.preventDefault();
+                        closeChat(true);
+                        return;
+                    }
+                }
             }
 
-            backToMain();
-            updateActionVisibility();
+            function setupEvents() {
+                if (els.menuStart) {
+                    els.menuStart.addEventListener('click', () => {
+                        startFreshConversation();
+                        openChat();
+                    });
+                }
+                if (els.menuSaved) {
+                    els.menuSaved.addEventListener('click', () => {
+                        renderSavedList();
+                        showSaved();
+                    });
+                }
+                if (els.menuInfo) {
+                    els.menuInfo.addEventListener('click', showInfo);
+                }
+                if (els.openInfo) {
+                    els.openInfo.addEventListener('click', showInfo);
+                }
+                if (els.infoClose) {
+                    els.infoClose.addEventListener('click', hideInfo);
+                }
+                if (els.savedBack) {
+                    els.savedBack.addEventListener('click', showMenu);
+                }
+                if (els.savedList) {
+                    els.savedList.addEventListener('click', handleSavedListClick);
+                }
+                if (els.chatClose) {
+                    els.chatClose.addEventListener('click', () => closeChat(true));
+                }
+                if (els.chatSend) {
+                    els.chatSend.addEventListener('click', handleSend);
+                }
+                if (els.chatInput) {
+                    els.chatInput.addEventListener('input', () => {
+                        autoGrow(els.chatInput);
+                        updateChatControls();
+                    });
+                    els.chatInput.addEventListener('keydown', (event) => {
+                        if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+                            event.preventDefault();
+                            handleSend();
+                        }
+                    });
+                }
+                if (els.chatSave) {
+                    els.chatSave.addEventListener('click', saveConversation);
+                }
+                if (els.chatReset) {
+                    els.chatReset.addEventListener('click', () => {
+                        if (!state.current || !state.current.messages.length) return;
+                        openConfirm('Start over with a fresh wish?', (result) => {
+                            if (!result) return;
+                            startFreshConversation();
+                            renderChat(true);
+                        });
+                    });
+                }
+                if (els.introSkip) {
+                    els.introSkip.addEventListener('click', hideIntro);
+                }
+                if (els.confirmYes) {
+                    els.confirmYes.addEventListener('click', () => closeConfirm(true));
+                }
+                if (els.confirmNo) {
+                    els.confirmNo.addEventListener('click', () => closeConfirm(false));
+                }
+                document.addEventListener('keydown', handleKeyDown);
+                window.addEventListener('beforeunload', hideToast);
+            }
 
-            window.processWish = processWish;
-            window.continueReflection = continueReflection;
-            window.storeReflection = storeReflection;
-            window.exportConversation = exportConversation;
-            window.exportStoredConversation = exportStoredConversation;
-            window.viewStored = viewStored;
-            window.deleteReflection = deleteReflection;
-            window.startNewWish = startNewWish;
-            window.openGuide = openGuide;
-            window.skipIntro = skipIntro;
-            window.closeGuide = closeGuide;
-            window.hideError = hideError;
-            window.showError = showError;
-            window.backToMain = backToMain;
+            function init() {
+                autoGrow(els.chatInput);
+                loadSaved();
+                renderChat(false);
+                setupEvents();
+                window.setTimeout(() => {
+                    if (els.intro) hideIntro();
+                }, 48000);
+            }
+
+            init();
+            window.birthdayAppState = state;
         })();
-        </script>
-
-
+    </script>
 </body>
-
 </html>
-
-
