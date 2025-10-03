@@ -63,7 +63,7 @@
             content: "";
             position: absolute;
             inset: 0;
-            background: linear-gradient(180deg, rgba(2, 6, 15, 0.35), rgba(2, 6, 15, 0.85));
+            background: linear-gradient(180deg, rgba(2, 6, 15, 0.25), rgba(2, 6, 15, 0.65));
         }
         #sky video {
             width: 100%;
@@ -117,11 +117,16 @@
             align-items: center;
             gap: 0.4em;
         }
-        .brand p {
-            margin: 6px 0 0;
-            color: var(--muted);
-            font-size: clamp(1rem, 0.4rem + 1vw, 1.18rem);
-            max-width: 36ch;
+        .emoji-star {
+            display: inline-block;
+            animation: shimmer 3s ease-in-out infinite;
+            filter: drop-shadow(0 0 8px rgba(255, 214, 109, 0.45));
+        }
+        .emoji-heart {
+            display: inline-block;
+            animation: heartbeat 1.6s ease-in-out infinite;
+            transform-origin: center;
+            filter: drop-shadow(0 0 6px rgba(255, 88, 150, 0.45));
         }
         button.icon-button {
             width: 42px;
@@ -604,7 +609,7 @@
             align-items: center;
             justify-content: center;
             padding: clamp(24px, 8vw, 42px);
-            background: rgba(2, 6, 15, 0.88);
+            background: rgba(2, 6, 15, 0.7);
             backdrop-filter: blur(14px);
             z-index: 90;
             transition: opacity 0.6s ease;
@@ -614,7 +619,7 @@
             pointer-events: none;
         }
         .intro-card {
-            background: rgba(6, 24, 38, 0.92);
+            background: rgba(6, 24, 38, 0.88);
             border-radius: var(--radius-lg);
             padding: clamp(28px, 8vw, 40px);
             border: 1px solid rgba(244, 254, 255, 0.16);
@@ -624,18 +629,23 @@
             flex-direction: column;
             gap: var(--gap-md);
             max-width: 520px;
+            max-height: min(92vh, 620px);
+            overflow-y: auto;
         }
         .intro-card h1 {
             margin: 0;
             font-family: 'Georgia', serif;
             font-size: clamp(2rem, 1.4rem + 2vw, 2.8rem);
             line-height: 1.2;
+            animation: fadeIntroTitle 1.4s ease both;
         }
         .intro-card p {
             margin: 0;
             font-size: clamp(1.05rem, 0.9rem + 0.9vw, 1.3rem);
             color: var(--muted);
             text-wrap: pretty;
+            opacity: 0;
+            animation: fadeIntroBody 1.2s ease 0.35s forwards;
         }
         #intro-skip {
             align-self: center;
@@ -655,6 +665,26 @@
             transform: translateY(-1px);
             box-shadow: 0 0 16px rgba(255, 214, 109, 0.4);
         }
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.18); }
+            45% { transform: scale(0.96); }
+            65% { transform: scale(1.08); }
+            80% { transform: scale(1.02); }
+        }
+        @keyframes shimmer {
+            0%, 100% { transform: rotate(0deg); opacity: 0.85; }
+            40% { transform: rotate(8deg); opacity: 1; }
+            60% { transform: rotate(-6deg); opacity: 0.95; }
+        }
+        @keyframes fadeIntroTitle {
+            0% { opacity: 0; transform: translateY(18px) scale(0.98); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes fadeIntroBody {
+            0% { opacity: 0; transform: translateY(16px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
         @keyframes twinkle {
             0%, 100% { opacity: 0.45; transform: scale(0.9); }
             50% { opacity: 1; transform: scale(1.1); }
@@ -670,6 +700,29 @@
         @keyframes floatUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+        #orientation-warning {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: clamp(32px, 8vw, 48px);
+            background: rgba(2, 6, 15, 0.9);
+            color: var(--text);
+            z-index: 110;
+            backdrop-filter: blur(18px);
+        }
+        #orientation-warning p {
+            max-width: 32ch;
+            line-height: 1.6;
+            font-size: clamp(1.05rem, 0.9rem + 0.8vw, 1.25rem);
+        }
+        @media screen and (orientation: landscape) and (max-width: 900px) {
+            #orientation-warning {
+                display: flex;
+            }
         }
         @media (min-width: 680px) {
             body {
@@ -711,10 +764,8 @@
     <main id="app" role="presentation">
         <header class="app-header">
             <div class="brand">
-                <h1>Make a wish<span aria-hidden="true">&#9733;</span></h1>
-                <p>Guided reflections crafted for Diana, wherever the night sky finds her.</p>
+                <h1>Make a wish<span aria-hidden="true" class="emoji-star">&#9733;</span></h1>
             </div>
-            <button id="open-info" class="icon-button" type="button" aria-label="How this space works">?</button>
         </header>
 
         <section id="screen-menu" class="screen is-active" role="region" aria-labelledby="menu-heading">
@@ -769,7 +820,7 @@
             <h2 id="info-title">How this space works</h2>
             <ol>
                 <li><strong>Make a wish:</strong> share what is on your heart and press <em>Send wish</em> to invite a reflection.</li>
-                <li><strong>Keep the dialogue flowing:</strong> add thoughts whenever you like and let Diana respond in the same thread.</li>
+                <li><strong>Keep the dialogue flowing:</strong> add thoughts whenever you like and let Reflection respond in the same thread.</li>
                 <li><strong>Save or return:</strong> capture the conversation, download it, or reopen it whenever inspiration strikes.</li>
                 <li><strong>Stay present:</strong> every reply is written for her, in the moment, under this shared sky.</li>
             </ol>
@@ -791,16 +842,19 @@
 
     <div id="intro" role="dialog" aria-modal="true" aria-labelledby="intro-title">
         <div class="intro-card">
-            <h1 id="intro-title">Happy Birthday, Diana <span aria-hidden="true">&#10084;</span></h1>
+            <h1 id="intro-title">Happy Birthday, Diana <span aria-hidden="true" class="emoji-heart">&#10084;</span></h1>
             <p>"It all began with a simple message under the glow of the northern lights: 'I know we don't know each other, but you're living my dream...' From that unexpected spark, it blossomed into discovering a truly wonderful soul&mdash;one cared for deeply, respected immensely, and cherished no matter where life flows. Birthdays aren't just for you; they're a reminder to those who adore you that your story is magic worth celebrating."</p>
             <button id="intro-skip" type="button">Tap to begin</button>
         </div>
     </div>
 
+    <div id="orientation-warning" aria-hidden="true">
+        <p>Please rotate your device back to portrait to keep the aurora glowing.</p>
+    </div>
     <script>
         (() => {
             const storeKey = 'reflections';
-            const baseGuidance = "You are Diana's steady inner voice. Respond with sincerity, curiosity, and gentle daring. Keep every reply under 90 words in a single paragraph and end with an original line that feels like a keepsake.";
+            const baseGuidance = "You are Reflection, a thoughtful guide for Diana's birthday wishes. Reply as \"Reflection\" with sincerity, curiosity, and gentle daring. Keep every reply under 90 words in a single paragraph, end with an original keepsake line, and if her note drifts away from heartfelt wishes gently remind her this space is for wishes and invite her to share one.";
             const state = {
                 saved: [],
                 current: null,
@@ -819,7 +873,6 @@
                 menuStart: document.getElementById('menu-start'),
                 menuSaved: document.getElementById('menu-saved'),
                 menuInfo: document.getElementById('menu-info'),
-                openInfo: document.getElementById('open-info'),
                 infoSheet: document.getElementById('info-sheet'),
                 infoClose: document.getElementById('info-close'),
                 savedBack: document.getElementById('saved-back'),
@@ -1002,7 +1055,7 @@
                     const placeholder = document.createElement('div');
                     placeholder.className = 'bubble thinking';
                     const paragraph = document.createElement('p');
-                    paragraph.textContent = 'Ready when you are. Share a wish to watch the conversation unfold.';
+                    paragraph.textContent = 'Ready when you are, Diana. Share a wish and Reflection will meet you there.';
                     placeholder.appendChild(paragraph);
                     els.chatThread.appendChild(placeholder);
                     updateChatHeader();
@@ -1017,7 +1070,7 @@
 
                     const label = document.createElement('span');
                     label.className = 'meta';
-                    label.textContent = message.author === 'guide' ? 'Diana' : 'Me';
+                    label.textContent = message.author === 'guide' ? 'Reflection' : 'Diana';
                     bubble.appendChild(label);
 
                     message.text.split(/\r?\n+/).forEach((line) => {
@@ -1053,7 +1106,7 @@
                 const bubble = document.createElement('article');
                 bubble.className = 'bubble thinking';
                 const text = document.createElement('p');
-                text.textContent = 'Diana is reflecting...';
+                text.textContent = 'Reflection is gathering her thoughts...';
                 bubble.appendChild(text);
                 return bubble;
             }
@@ -1075,7 +1128,7 @@
                 const guideCount = state.current.messages.filter((msg) => msg.author === 'guide').length;
                 els.chatTitle.textContent = firstUserMessage ? truncateText(firstUserMessage.text, 60) : 'New wish';
                 if (state.current.waiting) {
-                    els.chatSubtitle.textContent = 'Diana is crafting a reflection for you...';
+                    els.chatSubtitle.textContent = 'Reflection is crafting a reply under the aurora...';
                 } else if (guideCount) {
                     els.chatSubtitle.textContent = `Reflections so far: ${guideCount}`;
                 } else {
@@ -1170,7 +1223,7 @@
 
             function buildInitialPrompt(wish) {
                 const cleanWish = sanitize(wish);
-                return `${baseGuidance} Evaluate the wish in quotes: "${cleanWish}". If it lacks meaningful content, kindly request more detail in a short paragraph. Otherwise, craft one unique paragraph that mirrors her emotion or ambition, introduces one unexpected lens or question that sharpens her direction, balances realism with hope, and ends with a memorable closing line inviting thoughtful action.`;
+                return `${baseGuidance} Diana shares this wish: "${cleanWish}". Reply as Reflection with one vivid paragraph that honours her feeling, offers a fresh angle or question that sharpens her direction, balances warmth with grounded guidance, and ends with an original closing line inviting thoughtful action. If the wish feels unclear or unrelated to a heartfelt intention, gently ask her to reframe it as a wish.`;
             }
 
             function buildFollowupPrompt(wish, history, note) {
@@ -1180,9 +1233,8 @@
                 const earlier = cleanHistory.slice(0, -1).slice(-2);
                 const summary = earlier.length ? ' Earlier reflections already offered: ' + earlier.map((text) => `"${text}"`).join(' | ') + '.' : '';
                 const cleanNote = sanitize(note);
-                return `${baseGuidance} Original wish: "${cleanWish}". Your latest reflection was: "${lastReflection}".${summary} She now adds: "${cleanNote}". Continue the dialogue with another paragraph under 90 words that acknowledges where the last reflection leaves her, offers a fresh angle or probing question, and finishes with a distinct memorable line. If the wish still feels unclear, guide her to clarify it first.`;
+                return `${baseGuidance} Original wish from Diana: "${cleanWish}". Your latest reflection was: "${lastReflection}".${summary} She now adds: "${cleanNote}". Continue as Reflection with another paragraph under 90 words that acknowledges where the last reflection leaves her, offers a fresh angle or probing question, and finishes with a distinct memorable line. If her note seems confusing or off-topic, kindly guide her back to shaping it as a wish before moving forward.`;
             }
-
             async function callReflectionAPI(prompt) {
                 const response = await fetch('/openai-proxy', {
                     method: 'POST',
@@ -1207,7 +1259,7 @@
                 }
                 const hasGuide = state.current.messages.some((msg) => msg.author === 'guide');
                 if (!hasGuide) {
-                    showToast('Let Diana reply before saving this wish.', 'warn');
+                    showToast('Let Reflection reply before saving this wish.', 'warn');
                     return;
                 }
 
@@ -1269,7 +1321,7 @@
                 lines.push(`Wish: ${entry.wish}`);
                 lines.push('');
                 entry.messages.forEach((message, index) => {
-                    const author = message.author === 'guide' ? 'Diana' : 'Me';
+                    const author = message.author === 'guide' ? 'Reflection' : 'Diana';
                     lines.push(`${index + 1}. ${author}`);
                     lines.push(message.text);
                     lines.push('');
@@ -1538,9 +1590,6 @@
                 if (els.menuInfo) {
                     els.menuInfo.addEventListener('click', showInfo);
                 }
-                if (els.openInfo) {
-                    els.openInfo.addEventListener('click', showInfo);
-                }
                 if (els.infoClose) {
                     els.infoClose.addEventListener('click', hideInfo);
                 }
@@ -1610,3 +1659,67 @@
     </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
