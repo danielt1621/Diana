@@ -620,16 +620,28 @@
             align-items: center;
             justify-content: center;
             padding: clamp(24px, 8vw, 42px);
-            background: rgba(2, 6, 15, 0.55);
-            backdrop-filter: blur(10px);
+            background: transparent;
+            backdrop-filter: blur(6px);
             z-index: 90;
             transition: opacity 0.6s ease;
+            overflow: hidden;
+        }
+        #intro::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(2, 6, 15, 0.35), rgba(2, 6, 15, 0.72));
+            backdrop-filter: blur(2px);
+            z-index: 0;
+            pointer-events: none;
         }
         #intro.hidden {
             opacity: 0;
             pointer-events: none;
         }
         .intro-card {
+            position: relative;
+            z-index: 1;
             background: rgba(6, 24, 38, 0.78);
             border-radius: var(--radius-lg);
             padding: clamp(28px, 8vw, 40px);
@@ -639,10 +651,10 @@
             display: flex;
             flex-direction: column;
             gap: var(--gap-md);
-            max-width: 680px;
-            width: min(92vw, 680px);
-            max-height: min(92vh, 620px);
-            overflow-y: auto;
+            max-width: 720px;
+            width: min(92vw, 720px);
+            max-height: none;
+            overflow: visible;
         }
         .intro-card h1 {
             margin: 0;
@@ -656,6 +668,7 @@
             font-size: clamp(1.05rem, 0.9rem + 0.9vw, 1.3rem);
             color: var(--muted);
             text-wrap: pretty;
+            line-height: 1.65;
             opacity: 0;
             animation: fadeIntroBody 1.2s ease 0.35s forwards;
         }
@@ -1082,10 +1095,12 @@
                 }
 
                 const highlightId = state.current ? state.current.justReceived : null;
+                let highlightBubble = null;
                 const fragment = document.createDocumentFragment();
                 state.current.messages.forEach((message) => {
                     const bubble = document.createElement('article');
-                    bubble.className = `bubble ${message.author === 'guide' ? 'guide' : 'user'}`;
+                    bubble.className = 'bubble ' + (message.author === 'guide' ? 'guide' : 'user');
+                    bubble.dataset.messageId = message.id;
 
                     const label = document.createElement('span');
                     label.className = 'meta';
@@ -1101,6 +1116,7 @@
 
                     if (highlightId && message.id === highlightId && message.author === 'guide') {
                         bubble.classList.add('incoming');
+                        highlightBubble = bubble;
                     }
 
                     fragment.appendChild(bubble);
@@ -1120,10 +1136,18 @@
                 }
 
                 els.chatThread.appendChild(fragment);
+                if (highlightBubble) {
+                    requestAnimationFrame(() => {
+                        highlightBubble.scrollIntoView({ behavior: "smooth", block: "start" });
+                    });
+                } else if (scrollToEnd) {
+                    scrollThread();
+                }
+
                 if (state.current && state.current.justReceived) {
                     state.current.justReceived = null;
                 }
-                if (scrollToEnd) scrollThread();
+
                 updateChatHeader();
                 updateChatControls();
             }
@@ -1186,9 +1210,8 @@
             function truncateText(text, maxLength) {
                 const clean = safeString(text).trim();
                 if (clean.length <= maxLength) return clean || 'New wish';
-                return `${clean.slice(0, maxLength - 1).trim()}…`;
+                return clean.slice(0, Math.max(0, maxLength - 3)).trim() + '...';
             }
-
             function handleSend() {
                 if (!state.current || state.current.waiting) {
                     return;
